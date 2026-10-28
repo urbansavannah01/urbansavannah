@@ -1,0 +1,54 @@
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}
+
+/* Clean Receipt Print Styles */
+@media print {
+    @page {
+        margin: 0; /* Removes browser default headers, footers, and printed URLs */
+    }
+    
+    body * {
+        visibility: hidden !important;
+    }
+    
+    /* CRITICAL FIX: Forces the receipt container to display and be visible */
+    #printable-receipt, #printable-receipt * {
+        visibility: visible !important;
+    }
+    
+    #printable-receipt {
+        display: block !important; /* Overrides Tailwind's hidden (display: none) */
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        padding: 24px !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        z-index: 99999 !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+}
