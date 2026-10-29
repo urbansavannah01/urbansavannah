@@ -1,266 +1,258 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-slate-950">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Urban Savannah Collection - Admin Control Center</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Urban Savannah Collection - Admin Control Center</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body class="h-full font-sans text-slate-200 flex flex-col antialiased bg-slate-950 bg-cover bg-center" id="admin-body-bg">
-    <div class="absolute inset-0 bg-slate-950/85 backdrop-blur-sm z-0"></div>
-
-    <div class="relative z-10 flex-1 flex flex-col min-h-screen">
-        <!-- Admin Header -->
-        <header class="bg-slate-900/90 border-b border-slate-800 px-6 py-4 flex items-center justify-between backdrop-blur-md">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-xl shadow-lg">
-                    <i class="fa-solid fa-user-gear"></i>
-                </div>
-                <div>
-                    <h2 class="text-lg font-bold text-white leading-none">Admin Control Center</h2>
-                    <p class="text-xs text-slate-400 mt-1">Admin Urban Savannah Collection Management & Control Centre</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-3">
-                <a href="index.html" target="_blank" class="bg-sky-600 hover:bg-sky-500 text-white px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2">
-                    <i class="fa-solid fa-store"></i> View Customer Store
-                </a>
-                <button onclick="openChangePasswordModal()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 text-slate-200">
-                    <i class="fa-solid fa-key text-amber-400"></i> Password
-                </button>
-                <button onclick="logoutAdmin()" class="bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 px-3 py-2 rounded-xl text-xs font-semibold text-red-400 flex items-center gap-1.5 transition">
-                    <i class="fa-solid fa-right-from-bracket"></i> Logout
-                </button>
-            </div>
-        </header>
-
-        <!-- Admin Login Overlay -->
-        <div id="admin-login-screen" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4">
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center">
-                <div class="w-14 h-14 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl border border-amber-500/20">
-                    <i class="fa-solid fa-lock"></i>
-                </div>
-                <h3 class="text-xl font-bold text-white">Admin Authorization</h3>
-                <p class="text-xs text-slate-400 mt-1 mb-5">Enter security password</p>
-                <form onsubmit="handleAdminLogin(event)" class="space-y-4">
-                    <input type="password" id="admin-password-input" placeholder="Password" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-center text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
-                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 py-2.5 rounded-xl text-xs font-bold shadow-lg">Access Portal</button>
-                </form>
-            </div>
+  <div class="absolute inset-0 bg-slate-950/85 backdrop-blur-sm z-0"></div>
+  <div class="relative z-10 flex-1 flex flex-col min-h-screen">
+    
+    <!-- Admin Header -->
+    <header class="bg-slate-900/90 border-b border-slate-800 px-6 py-4 flex items-center justify-between backdrop-blur-md">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-xl shadow-lg">
+          <i class="fa-solid fa-user-gear"></i>
         </div>
-
-        <!-- Admin Navigation Tabs -->
-        <div class="bg-slate-900/60 border-b border-slate-800 px-6">
-            <div class="flex items-center space-x-4 overflow-x-auto py-2">
-                <button onclick="switchAdminTab('orders')" id="tab-btn-orders" class="admin-tab-btn px-4 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 text-white bg-sky-600">
-                    <i class="fa-solid fa-clipboard-list"></i> Orders & Deliveries
-                </button>
-                <button onclick="switchAdminTab('products')" id="tab-btn-products" class="admin-tab-btn px-4 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 text-slate-400 hover:text-white">
-                    <i class="fa-solid fa-boxes-stacked"></i> Products & Product details
-                </button>
-                <button onclick="switchAdminTab('settings')" id="tab-btn-settings" class="admin-tab-btn px-4 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 text-slate-400 hover:text-white">
-                    <i class="fa-solid fa-sliders"></i> Store, Maps & Custom Background
-                </button>
-                <button onclick="switchAdminTab('policies')" id="tab-btn-policies" class="admin-tab-btn px-4 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 text-slate-400 hover:text-white">
-                    <i class="fa-solid fa-file-contract"></i> Terms & Conditions & Privacy Policies Management
-                </button>
-            </div>
+        <div>
+          <h2 class="text-lg font-bold text-white leading-none">Admin Control Center</h2>
+          <p class="text-xs text-slate-400 mt-1">Urban Savannah Collection Management & Control Centre</p>
         </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="index.html" target="_blank" class="bg-sky-600 hover:bg-sky-500 text-white px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2">
+          <i class="fa-solid fa-store"></i> View Customer Store
+        </a>
+        <button onclick="openChangePassModal()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 text-slate-200">
+          <i class="fa-solid fa-key text-amber-400"></i> Password
+        </button>
+        <button onclick="logoutAdmin()" class="bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 px-3 py-2 rounded-xl text-xs font-semibold text-red-400 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </button>
+      </div>
+    </header>
 
-        <!-- Main Portal Body -->
-        <main class="flex-1 max-w-7xl w-full mx-auto px-6 py-6">
-
-            <!-- TAB 1: ORDERS & SPREADSHEETS -->
-            <div id="admin-tab-orders" class="space-y-6">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900/80 border border-slate-800 p-4 rounded-2xl">
-                    <div>
-                        <h3 class="text-lg font-bold text-white">Orders & Delivery Management</h3>
-                        <p class="text-xs text-slate-400">Download native Excel spreadsheet files (.xls) or CSV format for instant opening.</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="exportOrdersToExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2">
-                            <i class="fa-solid fa-file-excel"></i> Export Native Excel (.xls)
-                        </button>
-                        <button onclick="exportOrdersToSpreadsheet()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-4 py-2.5 rounded-xl border border-slate-700 flex items-center gap-2">
-                            <i class="fa-solid fa-file-csv"></i> Export CSV
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-950/60 text-xs uppercase text-slate-400 border-b border-slate-800">
-                                <tr>
-                                    <th class="py-3.5 px-4">Order ID & Nairobi Time</th>
-                                    <th class="py-3.5 px-4">Customer Details</th>
-                                    <th class="py-3.5 px-4">Items</th>
-                                    <th class="py-3.5 px-4">Checkout Method</th>
-                                    <th class="py-3.5 px-4">Payment Method</th>
-                                    <th class="py-3.5 px-4">Total</th>
-                                    <th class="py-3.5 px-4">Status</th>
-                                    <th class="py-3.5 px-4 text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-orders-table-body" class="divide-y divide-slate-800/60"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB 2: PRODUCTS -->
-            <div id="admin-tab-products" class="hidden space-y-6">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h3 class="text-lg font-bold text-white">Product Catalog & Images</h3>
-                        <p class="text-xs text-slate-400">Add unlimited products and multiple image URLs per product.</p>
-                    </div>
-                    <button onclick="openProductModal()" class="bg-sky-600 hover:bg-sky-500 text-white font-medium text-sm px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2">
-                        <i class="fa-solid fa-plus"></i> Add Product
-                    </button>
-                </div>
-                <div id="admin-products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-            </div>
-
-            <!-- TAB 3: SETTINGS -->
-            <div id="admin-tab-settings" class="hidden space-y-6">
-                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl max-w-3xl mx-auto">
-                    <h3 class="text-xl font-bold text-white mb-4 border-b border-slate-800 pb-3">Store Details & Payment Methods</h3>
-                    <form onsubmit="saveAdminSettings(event)" class="space-y-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div><label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Store Name</label><input type="text" id="setting-store-name" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></div>
-                            <div><label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Currency Symbol</label><input type="text" id="setting-store-currency" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></div>
-                            <div><label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Phone</label><input type="text" id="setting-store-phone" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></div>
-                            <div><label class="block text-xs font-semibold text-slate-400 uppercase mb-1">WhatsApp Number</label><input type="text" id="setting-store-whatsapp" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></div>
-                            <div><label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Instagram Handle / URL</label><input type="text" id="setting-store-instagram" placeholder="e.g. Urban Savannah Collection" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></div>
-                            <div><label class="block text-xs font-semibold text-slate-400 uppercase mb-1">TikTok Handle / Link</label><input type="text" id="setting-store-tiktok" placeholder="e.g. @Urban Savannah Collection" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></div>
-                            <div><label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Facebook Page / Link</label><input type="text" id="setting-store-facebook" placeholder="e.g. facebook.com/Urban Savannah Collection" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></div>
-                            <div><label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Payment Options (Shown on Receipts)</label><input type="text" id="setting-payment-methods" placeholder="e.g. M-Pesa Till 123456 / Cash" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></div>
-                        </div>
-                        <div class="sm:col-span-2">
-    <label class="block text-xs font-semibold text-sky-400 uppercase mb-1"><i class="fa-solid fa-image mr-1"></i> Business Logo Image URL (.jpg, .png)</label>
-    <input type="text" id="setting-logo-url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white">
-</div>
-                        <div><label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Location Address</label><textarea id="setting-store-location" rows="2" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></textarea></div>
-                        <div><label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Google Maps Embed URL</label><input type="text" id="setting-maps-url" placeholder="https://www.google.com/maps/embed?..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></div>
-                        <div><label class="block text-xs font-semibold text-amber-400 uppercase mb-1"><i class="fa-solid fa-image mr-1"></i> Admin Custom Background Image URL</label><input type="text" id="setting-bg-url" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></div>
-                        <div class="flex justify-end pt-2"><button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-6 py-2.5 rounded-xl shadow-lg">Save Settings</button></div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- TAB 4: POLICIES -->
-            <div id="admin-tab-policies" class="hidden space-y-6">
-                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl max-w-3xl mx-auto">
-                    <h3 class="text-xl font-bold text-white mb-4 border-b border-slate-800 pb-3">Edit Terms & Privacy Policies</h3>
-                    <form onsubmit="savePolicies(event)" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Terms and Conditions of Sale</label>
-                            <textarea id="policy-terms" rows="6" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Privacy Policy</label>
-                            <textarea id="policy-privacy" rows="6" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white"></textarea>
-                        </div>
-                        <div class="flex justify-end"><button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-6 py-2.5 rounded-xl">Save Policies</button></div>
-                    </form>
-                </div>
-            </div>
-
-        </main>
+    <!-- Admin Login Overlay -->
+    <div id="admin-login-screen" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center">
+        <div class="w-14 h-14 bg-amber-500/10 text-amber-400 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl border border-amber-500/20">
+          <i class="fa-solid fa-lock"></i>
+        </div>
+        <h3 class="text-xl font-bold text-white">Admin Authorization</h3>
+        <p class="text-xs text-slate-400 mt-1 mb-5">Enter security password</p>
+        <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+          <input type="password" id="admin-password-input" placeholder="Password" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-center text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+          <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 py-2.5 rounded-xl text-xs font-bold shadow-lg">Access Portal</button>
+        </form>
+      </div>
     </div>
 
-    <!-- Product Modal -->
-    <div id="product-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <h3 id="product-modal-title" class="font-bold text-white text-base mb-3">Add Product</h3>
-            <form id="product-form" onsubmit="saveProduct(event)" class="space-y-3">
-                <input type="hidden" id="prod-id">
-                <div><label class="block text-xs font-bold text-slate-400 uppercase mb-1">Product Title *</label><input type="text" id="prod-title" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white"></div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div><label class="block text-xs font-bold text-slate-400 uppercase mb-1">Price *</label><input type="number" step="0.01" id="prod-price" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white"></div>
-                    <div><label class="block text-xs font-bold text-slate-400 uppercase mb-1">Category *</label><input type="text" id="prod-category" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white"></div>
-                </div>
-                <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="block text-xs font-bold text-slate-400 uppercase">Product Photos (Image URLs)</label>
-                        <button type="button" onclick="addImageUrlInput()" class="text-xs text-sky-400 hover:text-sky-300 font-bold flex items-center gap-1"><i class="fa-solid fa-plus"></i> Add Image URL</button>
-                    </div>
-                    <div id="image-urls-container" class="space-y-2"></div>
-                </div>
-                <div><label class="block text-xs font-bold text-slate-400 uppercase mb-1">Detailed Description *</label><textarea id="prod-desc" rows="3" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white"></textarea></div>
-                <div class="pt-2 flex justify-end gap-2">
-                    <button type="button" onclick="closeProductModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-xs text-slate-300">Cancel</button>
-                    <button type="submit" class="px-5 py-2 rounded-xl bg-sky-600 text-white text-xs font-bold">Save Product</button>
-                </div>
-            </form>
-        </div>
+    <!-- Admin Navigation Tabs -->
+    <div class="bg-slate-900/60 border-b border-slate-800 px-6">
+      <div class="flex items-center space-x-4 overflow-x-auto py-2">
+        <button onclick="switchAdminTab('orders')" id="tab-btn-orders" class="admin-tab-btn px-4 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 text-white bg-sky-600">
+          <i class="fa-solid fa-clipboard-list"></i> Orders & Deliveries
+        </button>
+        <button onclick="switchAdminTab('products')" id="tab-btn-products" class="admin-tab-btn px-4 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 text-slate-400 hover:text-white">
+          <i class="fa-solid fa-boxes-stacked"></i> Products & Details
+        </button>
+        <button onclick="switchAdminTab('settings')" id="tab-btn-settings" class="admin-tab-btn px-4 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 text-slate-400 hover:text-white">
+          <i class="fa-solid fa-sliders"></i> Store, Maps & Background
+        </button>
+        <button onclick="switchAdminTab('policies')" id="tab-btn-policies" class="admin-tab-btn px-4 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 text-slate-400 hover:text-white">
+          <i class="fa-solid fa-file-contract"></i> Terms & Privacy Policies
+        </button>
+      </div>
     </div>
 
-    <!-- Password Modal -->
-    <div id="change-pass-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl">
-            <h3 class="text-lg font-bold text-white mb-3">Update Admin Password</h3>
-            <form onsubmit="handleChangePassword(event)" class="space-y-3">
-                <div><label class="block text-xs text-slate-400 mb-1">Current Password</label><input type="password" id="old-pass" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white"></div>
-                <div><label class="block text-xs text-slate-400 mb-1">New Password</label><input type="password" id="new-pass" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white"></div>
-                <div class="pt-2 flex justify-end gap-2">
-                    <button type="button" onclick="toggleChangePassModal(false)" class="px-3 py-2 rounded-xl bg-slate-800 text-xs text-slate-300">Cancel</button>
-                    <button type="submit" class="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 text-xs font-bold">Update</button>
-                </div>
-            </form>
+    <!-- Main Portal Body -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-6 py-6">
+      
+      <!-- TAB 1: ORDERS -->
+      <div id="admin-tab-orders" class="space-y-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900/80 border border-slate-800 p-4 rounded-2xl">
+          <div>
+            <h3 class="text-lg font-bold text-white">Orders & Delivery Management</h3>
+            <p class="text-xs text-slate-400">Download native Excel spreadsheet files (.xls) or CSV format for instant opening.</p>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="exportOrdersToExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2">
+              <i class="fa-solid fa-file-excel"></i> Export Native Excel (.xls)
+            </button>
+            <button onclick="exportOrdersToSpreadsheet()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-4 py-2.5 rounded-xl border border-slate-700 flex items-center gap-2">
+              <i class="fa-solid fa-file-csv"></i> Export CSV
+            </button>
+          </div>
         </div>
-    </div>
-
-    <!-- PRINTABLE RECEIPT TEMPLATE (Explicit IDs to prevent blank receipts) -->
-    <div id="printable-receipt" class="hidden">
-        <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 700px; margin: 0 auto; color: #000; background: #fff;">
-            <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 15px;">
-                <div>
-                    <h1 id="print-store-name" style="font-size: 22px; font-weight: bold; margin: 0; text-transform: uppercase;">Urban Savannah Collection</h1>
-                    <p id="print-store-address" style="font-size: 11px; color: #555; margin: 3px 0 0 0;">Nairobi, Kenya</p>
-                </div>
-                <div style="text-align: right;">
-                    <span style="background: #000; color: #fff; font-size: 10px; font-weight: bold; padding: 3px 8px; text-transform: uppercase;">Official Receipt</span>
-                    <p style="font-size: 12px; font-weight: bold; margin: 5px 0 2px 0;">Order ID: <span id="print-order-id"></span></p>
-                    <p style="font-size: 11px; color: #555; margin: 0;">Nairobi Time: <span id="print-order-date"></span></p>
-                </div>
-            </div>
-
-            <!-- Detailed Customer & Checkout Info -->
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 12px;">
-                <p style="font-weight: bold; text-transform: uppercase; margin: 0 0 6px 0; color: #334155;">Customer & Payment Information</p>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0;">
-                    <p style="margin: 0;"><strong>Customer Name:</strong> <span id="print-cust-name"></span></p>
-                    <p style="margin: 0;"><strong>Phone Number:</strong> <span id="print-cust-phone"></span></p>
-                    <p style="margin: 0; grid-column: span 2;"><strong>Delivery Address:</strong> <span id="print-cust-address"></span></p>
-                    <p style="margin: 0;"><strong>Checkout Channel:</strong> <span id="print-checkout-channel" style="text-transform: uppercase; font-weight: bold;"></span></p>
-                    <p style="margin: 0;"><strong>Payment Method:</strong> <span id="print-payment-methods" style="font-weight: bold;"></span></p>
-                </div>
-            </div>
-
-            <!-- Items Table -->
-            <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 15px;">
-                <thead>
-                    <tr style="border-bottom: 2px solid #000; text-transform: uppercase; text-align: left;">
-                        <th style="padding: 6px 0;">Photo</th>
-                        <th style="padding: 6px 0;">Item Description</th>
-                        <th style="padding: 6px 0; text-align: center;">Qty</th>
-                        <th style="padding: 6px 0; text-align: right;">Subtotal</th>
-                    </tr>
-                </thead>
-                <tbody id="print-items-body"></tbody>
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-950/60 text-xs uppercase text-slate-400 border-b border-slate-800">
+                <tr>
+                  <th class="py-3.5 px-4">Order ID & Nairobi Time</th>
+                  <th class="py-3.5 px-4">Customer Details</th>
+                  <th class="py-3.5 px-4">Items</th>
+                  <th class="py-3.5 px-4">Checkout Method</th>
+                  <th class="py-3.5 px-4">Payment Method</th>
+                  <th class="py-3.5 px-4">Total</th>
+                  <th class="py-3.5 px-4">Status</th>
+                  <th class="py-3.5 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-orders-table-body" class="divide-y divide-slate-800/60"></tbody>
             </table>
-
-            <!-- Total Amount -->
-            <div style="display: flex; justify-content: flex-end; font-size: 13px; font-weight: bold; border-top: 1px solid #000; padding-top: 8px;">
-                <p style="margin: 0;">Total Paid: <span id="print-total"></span></p>
-            </div>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <script src="admin.js"></script>
+      <!-- TAB 2: PRODUCTS -->
+      <div id="admin-tab-products" class="hidden space-y-6">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="text-lg font-bold text-white">Product Catalog & Images</h3>
+            <p class="text-xs text-slate-400">Add unlimited products and multiple image URLs per product.</p>
+          </div>
+          <button onclick="openProductModal()" class="bg-sky-600 hover:bg-sky-500 text-white font-medium text-sm px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i> Add Product
+          </button>
+        </div>
+        <div id="admin-products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      </div>
+
+      <!-- TAB 3: SETTINGS -->
+      <div id="admin-tab-settings" class="hidden space-y-6">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl max-w-3xl mx-auto">
+          <h3 class="text-xl font-bold text-white mb-4 border-b border-slate-800 pb-3">Store Details & Payment Methods</h3>
+          <form onsubmit="saveAdminSettings(event)" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div><label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Store Name</label><input type="text" id="setting-store-name" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></div>
+              <div><label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Currency Symbol</label><input type="text" id="setting-store-currency" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></div>
+              <div><label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Phone</label><input type="text" id="setting-store-phone" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></div>
+              <div><label class="block text-xs font-semibold text-slate-400 uppercase mb-1">WhatsApp Number</label><input type="text" id="setting-store-whatsapp" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></div>
+              <div><label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Instagram Handle / URL</label><input type="text" id="setting-store-instagram" placeholder="e.g. Urban Savannah Collection" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></div>
+              <div><label class="block text-xs font-semibold text-slate-400 uppercase mb-1">TikTok Handle / Link</label><input type="text" id="setting-store-tiktok" placeholder="e.g. @Urban Savannah Collection" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></div>
+              <div><label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Facebook Page / Link</label><input type="text" id="setting-store-facebook" placeholder="e.g. facebook.com/Urban Savannah Collection" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></div>
+              <div><label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Payment Options (Shown on Receipts)</label><input type="text" id="setting-payment-methods" placeholder="e.g. M-Pesa Till 123456 / Cash" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></div>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-semibold text-sky-400 uppercase mb-1"><i class="fa-solid fa-image mr-1"></i> Business Logo Image URL (.jpg, .png)</label>
+              <input type="text" id="setting-logo-url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white">
+            </div>
+            <div><label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Location Address</label><textarea id="setting-store-location" rows="2" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></textarea></div>
+            <div><label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Google Maps Embed URL</label><input type="text" id="setting-maps-url" placeholder="https://www.google.com/maps/embed?..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></div>
+            <div><label class="block text-xs font-semibold text-amber-400 uppercase mb-1"><i class="fa-solid fa-image mr-1"></i> Admin Custom Background Image URL</label><input type="text" id="setting-bg-url" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></div>
+            <div class="flex justify-end pt-2"><button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-6 py-2.5 rounded-xl shadow-lg">Save Settings</button></div>
+          </form>
+        </div>
+      </div>
+
+      <!-- TAB 4: POLICIES -->
+      <div id="admin-tab-policies" class="hidden space-y-6">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl max-w-3xl mx-auto">
+          <h3 class="text-xl font-bold text-white mb-4 border-b border-slate-800 pb-3">Edit Terms & Privacy Policies</h3>
+          <form onsubmit="savePolicies(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Terms and Conditions of Sale</label>
+              <textarea id="policy-terms" rows="6" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white"></textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Privacy Policy</label>
+              <textarea id="policy-privacy" rows="6" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white"></textarea>
+            </div>
+            <div class="flex justify-end"><button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-6 py-2.5 rounded-xl">Save Policies</button></div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Product Modal -->
+  <div id="product-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <h3 id="product-modal-title" class="font-bold text-white text-base mb-3">Add Product</h3>
+      <form id="product-form" onsubmit="saveProduct(event)" class="space-y-3">
+        <input type="hidden" id="prod-id">
+        <div><label class="block text-xs font-bold text-slate-400 uppercase mb-1">Product Title *</label><input type="text" id="prod-title" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white"></div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="block text-xs font-bold text-slate-400 uppercase mb-1">Price *</label><input type="number" step="0.01" id="prod-price" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white"></div>
+          <div><label class="block text-xs font-bold text-slate-400 uppercase mb-1">Category *</label><input type="text" id="prod-category" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white"></div>
+        </div>
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="block text-xs font-bold text-slate-400 uppercase">Product Photos (Image URLs)</label>
+            <button type="button" onclick="addImageUrlInput()" class="text-xs text-sky-400 hover:text-sky-300 font-bold flex items-center gap-1"><i class="fa-solid fa-plus"></i> Add Image URL</button>
+          </div>
+          <div id="image-urls-container" class="space-y-2"></div>
+        </div>
+        <div><label class="block text-xs font-bold text-slate-400 uppercase mb-1">Detailed Description *</label><textarea id="prod-desc" rows="3" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white"></textarea></div>
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closeProductModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-xs text-slate-300">Cancel</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-sky-600 text-white text-xs font-bold">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Password Modal -->
+  <div id="change-pass-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl">
+      <h3 class="text-lg font-bold text-white mb-3">Update Admin Password</h3>
+      <form onsubmit="handleChangePassword(event)" class="space-y-3">
+        <div><label class="block text-xs text-slate-400 mb-1">Current Password</label><input type="password" id="old-pass" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white"></div>
+        <div><label class="block text-xs text-slate-400 mb-1">New Password</label><input type="password" id="new-pass" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white"></div>
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="toggleChangePassModal(false)" class="px-3 py-2 rounded-xl bg-slate-800 text-xs text-slate-300">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 text-xs font-bold">Update</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- PRINTABLE RECEIPT TEMPLATE -->
+  <div id="printable-receipt" class="hidden">
+    <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 700px; margin: 0 auto; color: #000; background: #fff;">
+      <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 15px;">
+        <div>
+          <h1 id="print-store-name" style="font-size: 22px; font-weight: bold; margin: 0; text-transform: uppercase;">Urban Savannah Collection</h1>
+          <p id="print-store-address" style="font-size: 11px; color: #555; margin: 3px 0 0 0;">Nairobi, Kenya</p>
+        </div>
+        <div style="text-align: right;">
+          <span style="background: #000; color: #fff; font-size: 10px; font-weight: bold; padding: 3px 8px; text-transform: uppercase;">Official Receipt</span>
+          <p style="font-size: 12px; font-weight: bold; margin: 5px 0 2px 0;">Order ID: <span id="print-order-id"></span></p>
+          <p style="font-size: 11px; color: #555; margin: 0;">Nairobi Time: <span id="print-order-date"></span></p>
+        </div>
+      </div>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-size: 12px;">
+        <p style="font-weight: bold; text-transform: uppercase; margin: 0 0 6px 0; color: #334155;">Customer & Payment Information</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0;">
+          <p style="margin: 0;"><strong>Customer Name:</strong> <span id="print-cust-name"></span></p>
+          <p style="margin: 0;"><strong>Phone Number:</strong> <span id="print-cust-phone"></span></p>
+          <p style="margin: 0; grid-column: span 2;"><strong>Delivery Address:</strong> <span id="print-cust-address"></span></p>
+          <p style="margin: 0;"><strong>Checkout Channel:</strong> <span id="print-checkout-channel" style="text-transform: uppercase; font-weight: bold;"></span></p>
+          <p style="margin: 0;"><strong>Payment Method:</strong> <span id="print-payment-methods" style="font-weight: bold;"></span></p>
+        </div>
+      </div>
+      <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 15px;">
+        <thead>
+          <tr style="border-bottom: 2px solid #000; text-transform: uppercase; text-align: left;">
+            <th style="padding: 6px 0;">Photo</th>
+            <th style="padding: 6px 0;">Item Description</th>
+            <th style="padding: 6px 0; text-align: center;">Qty</th>
+            <th style="padding: 6px 0; text-align: right;">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody id="print-items-body"></tbody>
+      </table>
+      <div style="display: flex; justify-content: flex-end; font-size: 13px; font-weight: bold; border-top: 1px solid #000; padding-top: 8px;">
+        <p style="margin: 0;">Total Paid: <span id="print-total"></span></p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="admin.js"></script>
 </body>
 </html>
