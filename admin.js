@@ -7,6 +7,7 @@ import {
   doc, 
   setDoc, 
   deleteDoc, 
+  getDoc,
   onSnapshot 
 } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
@@ -33,9 +34,7 @@ const DEFAULT_SETTINGS = {
   privacy: "Information collected during checkout is strictly used for order processing and delivery."
 };
 
-let settings = JSON.parse(localStorage.getItem('Urban Savannah Collection_settings')) || DEFAULT_SETTINGS;
-if (!settings.adminPassword) settings.adminPassword = DEFAULT_SETTINGS.adminPassword;
-
+let settings = DEFAULT_SETTINGS;
 let products = [];
 let orders = [];
 
@@ -43,7 +42,7 @@ function formatMoney(amount) {
   return `${settings.currency || '$'}${parseFloat(amount).toFixed(2)}`;
 }
 
-window.onload = function() {
+window.onload = async function() {
   const isAuth = localStorage.getItem('Urban Savannah Collection_admin_auth');
   const loginScreen = document.getElementById('admin-login-screen');
   
@@ -52,6 +51,34 @@ window.onload = function() {
   } else {
     if (loginScreen) loginScreen.classList.remove('hidden');
   }
+
+  // Fetch or listen to settings from Firestore cloud
+  try {
+    const settingsRef = doc(db, "settings", "store_settings");
+    const docSnap = await getDoc(settingsRef);
+    if (docSnap.exists()) {
+      const cloudSettings = docSnap.data();
+      // If DEFAULT_SETTINGS.adminPassword was changed in code for recovery, respect it; otherwise use cloud password
+      const activePassword = DEFAULT_SETTINGS.adminPassword !== "admin123" ? DEFAULT_SETTINGS.adminPassword : (cloudSettings.adminPassword || DEFAULT_SETTINGS.adminPassword);
+      settings = { ...DEFAULT_SETTINGS, ...cloudSettings, adminPassword: activePassword };
+    } else {
+      settings = DEFAULT_SETTINGS;
+      await setDoc(settingsRef, settings);
+    }
+  } catch (err) {
+    console.error("Error loading settings from cloud:", err);
+    settings = DEFAULT_SETTINGS;
+  }
+
+  // Real-time listener for settings updates across devices
+  onSnapshot(doc(db, "settings", "store_settings"), (docSnap) => {
+    if (docSnap.exists()) {
+      const cloudSettings = docSnap.data();
+      settings = { ...settings, ...cloudSettings };
+      syncAdminData();
+      loadPoliciesForm();
+    }
+  });
   
   syncAdminData();
   loadPoliciesForm();
@@ -75,8 +102,12 @@ window.onload = function() {
   });
 };
 
-function saveAdminState() {
-  localStorage.setItem('Urban Savannah Collection_settings', JSON.stringify(settings));
+async function saveAdminState() {
+  try {
+    await setDoc(doc(db, "settings", "store_settings"), settings);
+  } catch (err) {
+    console.error("Error saving settings to cloud:", err);
+  }
   syncAdminData();
 }
 
@@ -344,7 +375,7 @@ window.saveAdminSettings = function(e) {
   }
   
   saveAdminState();
-  alert("Store settings saved successfully!");
+  alert("Store settings saved successfully to cloud!");
 };
 
 window.openChangePassModal = function() {
@@ -355,7 +386,7 @@ window.toggleChangePassModal = function(open) {
   document.getElementById('change-pass-modal').classList.toggle('hidden', !open);
 };
 
-window.handleChangePassword = function(e) {
+window.handleChangePassword = async function(e) {
   e.preventDefault();
   const oldP = document.getElementById('old-pass').value;
   const newP = document.getElementById('new-pass').value;
@@ -366,16 +397,16 @@ window.handleChangePassword = function(e) {
   }
   
   settings.adminPassword = newP;
-  saveAdminState();
+  await saveAdminState();
   toggleChangePassModal(false);
-  alert("Password updated successfully!");
+  alert("Password updated successfully and synced to cloud!");
 };
 
 function loadPoliciesForm() {
   const pTerms = document.getElementById('policy-terms');
   const pPrivacy = document.getElementById('policy-privacy');
-  if (pTerms) pTerms.value = settings.terms;
-  if (pPrivacy) pPrivacy.value = settings.privacy;
+  if (pTerms) pTerms.value = settings.terms || DEFAULT_SETTINGS.terms;
+  if (pPrivacy) pPrivacy.value = settings.privacy || DEFAULT_SETTINGS.privacy;
 }
 
 window.savePolicies = function(e) {
@@ -383,7 +414,7 @@ window.savePolicies = function(e) {
   settings.terms = document.getElementById('policy-terms').value;
   settings.privacy = document.getElementById('policy-privacy').value;
   saveAdminState();
-  alert("Policies updated successfully!");
+  alert("Policies updated successfully to cloud!");
 };
 
 window.printOrderReceipt = function(orderId) {
