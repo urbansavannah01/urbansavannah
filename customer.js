@@ -1,7 +1,13 @@
 import { firebaseConfig } from "./firebase-config.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-analytics.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+import { 
+  getFirestore, 
+  collection, 
+  doc, 
+  setDoc, 
+  onSnapshot 
+} from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
@@ -24,8 +30,7 @@ const DEFAULT_SETTINGS = {
 };
 
 let settings = JSON.parse(localStorage.getItem('Urban Savannah Collection_settings')) || DEFAULT_SETTINGS;
-let products = JSON.parse(localStorage.getItem('Urban Savannah Collection_products')) || [];
-let orders = JSON.parse(localStorage.getItem('Urban Savannah Collection_orders')) || [];
+let products = [];
 let cart = JSON.parse(localStorage.getItem('Urban Savannah Collection_cart')) || [];
 let selectedCategory = 'All';
 
@@ -48,8 +53,16 @@ window.onload = function() {
     yearCopy.textContent = new Date().getFullYear();
   }
   syncCustomerStoreData();
-  renderCustomerProducts();
   updateCartUI();
+  
+  // Real-time Firestore listener for products
+  onSnapshot(collection(db, "products"), (snapshot) => {
+    products = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    renderCustomerProducts();
+  });
 };
 
 function syncCustomerStoreData() {
@@ -106,7 +119,7 @@ window.renderCustomerProducts = function() {
   }
 
   const filtered = products.filter(p => {
-    const matchesSearch = p.title.toLowerCase().includes(searchVal) || p.description.toLowerCase().includes(searchVal);
+    const matchesSearch = (p.title || '').toLowerCase().includes(searchVal) || (p.description || '').toLowerCase().includes(searchVal);
     const matchesCat = selectedCategory === 'All' || p.category === selectedCategory;
     return matchesSearch && matchesCat;
   });
@@ -254,7 +267,7 @@ window.toggleCheckoutModal = function(open) {
   document.getElementById('checkout-modal').classList.toggle('hidden', !open);
 };
 
-window.submitCustomerOrder = function(e) {
+window.submitCustomerOrder = async function(e) {
   e.preventDefault();
   if (cart.length === 0) return;
   
@@ -269,8 +282,9 @@ window.submitCustomerOrder = function(e) {
   const subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
   const total = subtotal + parseFloat(settings.deliveryFee || 0);
   
+  const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
   const newOrder = {
-    id: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
+    id: orderId,
     dateTime: nairobiTime,
     customerName: name,
     customerPhone: phone,
@@ -282,8 +296,12 @@ window.submitCustomerOrder = function(e) {
     contactChannel: channel
   };
   
-  orders.unshift(newOrder);
-  localStorage.setItem('Urban Savannah Collection_orders', JSON.stringify(orders));
+  try {
+    // Save order directly to Firestore "orders" collection using orderId as document ID
+    await setDoc(doc(db, "orders", orderId), newOrder);
+  } catch (err) {
+    console.error("Error saving order to Firestore:", err);
+  }
   
   cart = [];
   localStorage.setItem('Urban Savannah Collection_cart', JSON.stringify(cart));
