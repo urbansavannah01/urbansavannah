@@ -1,12 +1,12 @@
 import { firebaseConfig } from "./firebase-config.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-analytics.js";
-import { 
-  getFirestore, 
-  collection, 
-  doc, 
-  setDoc, 
-  onSnapshot 
+import {
+  getFirestore,
+  collection,
+  doc,
+  setDoc,
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
 const app = initializeApp(firebaseConfig);
@@ -35,7 +35,7 @@ let cart = JSON.parse(localStorage.getItem('Urban Savannah Collection_cart')) ||
 let selectedCategory = 'All';
 
 function formatMoney(amount) {
-  return `${settings.currency || '$'}${parseFloat(amount).toFixed(2)}`;
+  return `${settings.currency || '$'}${parseFloat(amount || 0).toFixed(2)}`;
 }
 
 function getNairobiDateTime() {
@@ -52,7 +52,7 @@ window.onload = function() {
   if (yearCopy) {
     yearCopy.textContent = new Date().getFullYear();
   }
-  
+
   onSnapshot(doc(db, "settings", "store_settings"), (docSnap) => {
     if (docSnap.exists()) {
       settings = { ...DEFAULT_SETTINGS, ...docSnap.data() };
@@ -60,8 +60,6 @@ window.onload = function() {
       settings = DEFAULT_SETTINGS;
     }
     syncCustomerStoreData();
-    updateCartUI();
-    renderCustomerProducts();
   });
 
   onSnapshot(collection(db, "products"), (snapshot) => {
@@ -78,37 +76,37 @@ window.onload = function() {
 function syncCustomerStoreData() {
   const logoImg = document.getElementById('store-logo-img');
   if (logoImg) logoImg.src = settings.logoUrl || 'https://placehold.co/100x100';
-  
+
   const navTitle = document.getElementById('store-nav-title');
   if (navTitle) navTitle.textContent = settings.storeName;
-  
+
   const heroTitle = document.getElementById('hero-store-title');
   if (heroTitle) heroTitle.textContent = `Welcome to ${settings.storeName}`;
-  
+
   const heroLoc = document.getElementById('hero-store-location');
   if (heroLoc) heroLoc.innerHTML = `<i class="fa-solid fa-location-dot text-sky-500 mr-1.5"></i> ${settings.location}`;
-  
+
   const footName = document.getElementById('footer-store-name');
   if (footName) footName.textContent = settings.storeName;
-  
+
   const footAddr = document.getElementById('footer-address');
   if (footAddr) footAddr.textContent = settings.location;
-  
+
   const footPhone = document.getElementById('footer-phone');
   if (footPhone) footPhone.textContent = `Phone: ${settings.phone}`;
-  
+
   const footWa = document.getElementById('footer-whatsapp');
   if (footWa) footWa.textContent = `WhatsApp: ${settings.whatsapp}`;
-  
+
   const mapsIframe = document.getElementById('footer-maps-iframe');
   if (mapsIframe && settings.mapsUrl) mapsIframe.src = settings.mapsUrl;
-  
+
   const navWa = document.getElementById('nav-whatsapp-link');
   if (navWa) navWa.href = `https://wa.me/${settings.whatsapp ? settings.whatsapp.replace(/[^0-9]/g, '') : ''}`;
-  
+
   const navPhone = document.getElementById('nav-phone-link');
   if (navPhone) navPhone.href = `tel:${settings.phone}`;
-  
+
   const cleanIg = settings.instagram ? settings.instagram.replace('@','').split('/').pop() : '';
   const navIg = document.getElementById('nav-instagram-link');
   if (navIg) navIg.href = `https://ig.me/m/${cleanIg}`;
@@ -119,9 +117,9 @@ window.renderCustomerProducts = function() {
   const searchInput = document.getElementById('customer-search-input');
   const searchVal = searchInput ? searchInput.value.toLowerCase() : '';
   const emptyState = document.getElementById('no-products-state');
-  const categories = ['All', ...new Set(products.map(p => p.category))];
+
+  const categories = ['All', ...new Set(products.map(p => p.category).filter(Boolean))];
   const catContainer = document.getElementById('category-filter-container');
-  
   if (catContainer) {
     catContainer.innerHTML = categories.map(cat => `
       <button onclick="filterCategory('${cat}')" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${selectedCategory === cat ? 'bg-sky-600 text-white' : 'bg-slate-900 text-slate-400 border border-slate-800'}">${cat}</button>
@@ -170,23 +168,27 @@ window.filterCategory = function(cat) {
 window.openProductDetailModal = function(id) {
   const product = products.find(p => p.id === id);
   if (!product) return;
-  
+
   document.getElementById('modal-prod-title').textContent = product.title;
-  document.getElementById('modal-main-img').src = product.images[0];
+  document.getElementById('modal-main-img').src = product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/600x400';
   document.getElementById('modal-prod-category').textContent = product.category;
   document.getElementById('modal-prod-price').textContent = formatMoney(product.price);
   document.getElementById('modal-prod-desc').textContent = product.description;
-  
+
   const thumbs = document.getElementById('modal-thumbs-container');
-  thumbs.innerHTML = product.images.map(img => `
-    <img src="${img}" onclick="document.getElementById('modal-main-img').src='${img}'" class="w-14 h-14 object-cover rounded-lg cursor-pointer border border-slate-800 hover:border-sky-500">
-  `).join('');
-  
+  if (product.images) {
+    thumbs.innerHTML = product.images.map(img => `
+      <img src="${img}" onclick="document.getElementById('modal-main-img').src='${img}'" class="w-14 h-14 object-cover rounded-lg cursor-pointer border border-slate-800 hover:border-sky-500">
+    `).join('');
+  } else {
+    thumbs.innerHTML = '';
+  }
+
   document.getElementById('modal-add-cart-btn').onclick = () => {
     addToCart(product.id);
     closeProductDetailModal();
   };
-  
+
   document.getElementById('product-detail-modal').classList.remove('hidden');
 };
 
@@ -197,14 +199,20 @@ window.closeProductDetailModal = function() {
 window.addToCart = function(productId) {
   const product = products.find(p => p.id === productId);
   if (!product) return;
-  
+
   const existing = cart.find(item => item.id === productId);
   if (existing) {
     existing.qty += 1;
   } else {
-    cart.push({ id: product.id, title: product.title, price: product.price, image: product.images[0], qty: 1 });
+    cart.push({
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      image: product.images && product.images.length > 0 ? product.images[0] : '',
+      qty: 1
+    });
   }
-  
+
   localStorage.setItem('Urban Savannah Collection_cart', JSON.stringify(cart));
   updateCartUI();
   showToast(`Added "${product.title}" to cart`);
@@ -217,31 +225,34 @@ window.updateCartQty = function(productId, change) {
     if (item.qty <= 0) {
       cart = cart.filter(i => i.id !== productId);
     }
-    localStorage.setItem('Urban Savannah Collection_cart', JSON.stringify(cart));
-    updateCartUI();
   }
+  localStorage.setItem('Urban Savannah Collection_cart', JSON.stringify(cart));
+  updateCartUI();
 };
 
 window.updateCartUI = function() {
   const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
   const badgeCount = document.getElementById('cart-badge-count');
   if (badgeCount) badgeCount.textContent = totalItems;
-  
+
   const container = document.getElementById('cart-items-container');
   if (!container) return;
-  
+
   if (cart.length === 0) {
-    container.innerHTML = `<p class="text-center text-slate-500 py-12 text-xs">Cart is currently empty</p>`;
+    container.innerHTML = '<p class="text-center text-slate-500 py-12 text-xs">Cart is currently empty</p>';
     document.getElementById('cart-subtotal').textContent = formatMoney(0);
     document.getElementById('cart-delivery-fee').textContent = formatMoney(0);
     document.getElementById('cart-total-price').textContent = formatMoney(0);
     return;
   }
-  
+
   container.innerHTML = cart.map(item => `
     <div class="flex items-center gap-3 pt-3">
-      <img src="${item.image}" class="w-12 h-12 object-cover rounded-lg bg-slate-950">
-      <div class="flex-1"><h4 class="text-xs font-bold text-white">${item.title}</h4><p class="text-xs text-sky-400 font-bold">${formatMoney(item.price)}</p></div>
+      <img src="${item.image}" class="w-12 h-12 object-cover rounded-lg bg-slate-950" onerror="this.src='https://placehold.co/100x100'">
+      <div class="flex-1">
+        <h4 class="text-xs font-bold text-white">${item.title}</h4>
+        <p class="text-xs text-sky-400 font-bold">${formatMoney(item.price)}</p>
+      </div>
       <div class="flex items-center gap-2">
         <button onclick="updateCartQty('${item.id}', -1)" class="w-5 h-5 bg-slate-800 text-slate-300 rounded">-</button>
         <span class="text-xs font-bold text-white">${item.qty}</span>
@@ -249,11 +260,11 @@ window.updateCartUI = function() {
       </div>
     </div>
   `).join('');
-  
+
   const subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
   const deliveryFee = parseFloat(settings.deliveryFee) || 0;
   const total = subtotal + deliveryFee;
-  
+
   document.getElementById('cart-subtotal').textContent = formatMoney(subtotal);
   document.getElementById('cart-delivery-fee').textContent = formatMoney(deliveryFee);
   document.getElementById('cart-total-price').textContent = formatMoney(total);
@@ -280,19 +291,19 @@ window.toggleCheckoutModal = function(open) {
 window.submitCustomerOrder = async function(e) {
   e.preventDefault();
   if (cart.length === 0) return;
-  
+
   const name = document.getElementById('cust-name').value;
   const phone = document.getElementById('cust-phone').value;
   const address = document.getElementById('cust-address').value;
   const timePref = document.getElementById('cust-time').value || 'ASAP';
   const channelEl = document.querySelector('input[name="contact-channel"]:checked');
   const channel = channelEl ? channelEl.value : 'whatsapp';
-  
+
   const nairobiTime = getNairobiDateTime();
   const subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
   const total = subtotal + parseFloat(settings.deliveryFee || 0);
-  
   const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+
   const newOrder = {
     id: orderId,
     dateTime: nairobiTime,
@@ -305,23 +316,23 @@ window.submitCustomerOrder = async function(e) {
     status: 'Pending Delivery',
     contactChannel: channel
   };
-  
+
   try {
     await setDoc(doc(db, "orders", orderId), newOrder);
   } catch (err) {
     console.error("Error saving order to Firestore:", err);
   }
-  
+
   cart = [];
   localStorage.setItem('Urban Savannah Collection_cart', JSON.stringify(cart));
   updateCartUI();
   toggleCheckoutModal(false);
-  
+
   const totalQty = newOrder.items.reduce((acc, curr) => acc + curr.qty, 0);
   const greeting = totalQty === 1 ? "Hello, I wish to make the following order" : "Hello, I wish to make the following orders";
   const itemsSummary = newOrder.items.map(i => `${i.title} (Qty: ${i.qty}) - ${formatMoney(i.price * i.qty)}`).join('\n');
   const orderText = `${greeting}:\n\n*Order ID:* #${newOrder.id}\n*Nairobi Time:* ${nairobiTime}\n\n*Customer Details:*\nName: ${name}\nPhone: ${phone}\nAddress: ${address}\nPreferred Time: ${timePref}\n\n*Items Ordered:*\n${itemsSummary}\n\n*TOTAL PAYABLE:* ${formatMoney(total)}`;
-  
+
   if (channel === 'whatsapp') {
     window.open(`https://wa.me/${settings.whatsapp ? settings.whatsapp.replace(/[^0-9]/g, '') : ''}?text=${encodeURIComponent(orderText)}`, '_blank');
   } else if (channel === 'instagram') {
