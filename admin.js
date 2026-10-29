@@ -29,7 +29,7 @@ const DEFAULT_SETTINGS = {
   mapsUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15955.292672314545!2d36.817223!3d-1.286389!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1172d84d49a7%3A0xf7cf0254b297924c!2sNairobi!5e0!3m2!1sen!2ske!4v1650000000000!5m2!1sen!2ske",
   deliveryFee: 5.00,
   bgUrl: "https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=1600&q=80",
-  adminPassword: "123456789", // EDIT THIS FOR RECOVERY
+  adminPassword: "admin123", // <-- CHANGE THIS TO RECOVER PASSWORD IF LOST
   terms: "Welcome to Urban Savannah Collection. Purchases are governed by local delivery guidelines in Nairobi, Kenya.",
   privacy: "Information collected during checkout is strictly used for order processing and delivery."
 };
@@ -52,7 +52,6 @@ window.onload = async function() {
     if (loginScreen) loginScreen.classList.remove('hidden');
   }
 
-  // Fetch settings from Firestore cloud while enforcing hardcoded password override if modified
   try {
     const settingsRef = doc(db, "settings", "store_settings");
     const docSnap = await getDoc(settingsRef);
@@ -61,7 +60,7 @@ window.onload = async function() {
       settings = { 
         ...DEFAULT_SETTINGS, 
         ...cloudSettings, 
-        adminPassword: DEFAULT_SETTINGS.adminPassword // Code-level password always overrides for recovery
+        adminPassword: cloudSettings.adminPassword || DEFAULT_SETTINGS.adminPassword 
       };
     } else {
       settings = DEFAULT_SETTINGS;
@@ -72,14 +71,13 @@ window.onload = async function() {
     settings = DEFAULT_SETTINGS;
   }
 
-  // Real-time listener for settings updates across devices
   onSnapshot(doc(db, "settings", "store_settings"), (docSnap) => {
     if (docSnap.exists()) {
       const cloudSettings = docSnap.data();
       settings = { 
         ...settings, 
         ...cloudSettings, 
-        adminPassword: DEFAULT_SETTINGS.adminPassword 
+        adminPassword: cloudSettings.adminPassword || settings.adminPassword 
       };
       syncAdminData();
       loadPoliciesForm();
@@ -89,7 +87,6 @@ window.onload = async function() {
   syncAdminData();
   loadPoliciesForm();
 
-  // Real-time Firestore listener for products
   onSnapshot(collection(db, "products"), (snapshot) => {
     products = snapshot.docs.map(doc => ({
       id: doc.id,
@@ -98,7 +95,6 @@ window.onload = async function() {
     renderAdminProducts();
   });
 
-  // Real-time Firestore listener for orders
   onSnapshot(collection(db, "orders"), (snapshot) => {
     orders = snapshot.docs.map(doc => ({
       id: doc.id,
@@ -149,12 +145,19 @@ function syncAdminData() {
   }
 }
 
-window.handleAdminLogin = function(e) {
+window.handleAdminLogin = async function(e) {
   e.preventDefault();
   const passwordInput = document.getElementById('admin-password-input');
   const inputPass = passwordInput ? passwordInput.value : '';
   
+  // Checks against active cloud/local password OR code-level recovery fallback from DEFAULT_SETTINGS
   if (inputPass === settings.adminPassword || inputPass === DEFAULT_SETTINGS.adminPassword) {
+    // If recovery password from code was used, automatically sync it to cloud as the active password
+    if (inputPass === DEFAULT_SETTINGS.adminPassword && inputPass !== settings.adminPassword) {
+      settings.adminPassword = DEFAULT_SETTINGS.adminPassword;
+      await saveAdminState();
+    }
+
     localStorage.setItem('Urban Savannah Collection_admin_auth', 'true');
     const loginScreen = document.getElementById('admin-login-screen');
     if (loginScreen) loginScreen.classList.add('hidden');
