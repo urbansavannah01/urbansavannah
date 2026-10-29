@@ -53,7 +53,6 @@ window.onload = function() {
     yearCopy.textContent = new Date().getFullYear();
   }
   
-  // Real-time Firestore listener for settings
   onSnapshot(doc(db, "settings", "store_settings"), (docSnap) => {
     if (docSnap.exists()) {
       settings = { ...DEFAULT_SETTINGS, ...docSnap.data() };
@@ -65,7 +64,6 @@ window.onload = function() {
     renderCustomerProducts();
   });
 
-  // Real-time Firestore listener for products
   onSnapshot(collection(db, "products"), (snapshot) => {
     products = snapshot.docs.map(doc => ({
       id: doc.id,
