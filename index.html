@@ -1,217 +1,207 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-slate-950">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Urban Savannah Collection - Customer Store</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Urban Savannah Collection - Customer Store</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body class="h-full font-sans text-slate-100 flex flex-col antialiased selection:bg-sky-500 selection:text-white">
-
-    <!-- Global Toast Notification -->
-    <div id="global-toast" class="fixed top-5 right-5 z-50 transform transition-all duration-300 translate-y-[-100px] opacity-0 pointer-events-none">
-        <div class="bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-700">
-            <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
-            <span id="toast-message" class="text-sm font-medium">Notification</span>
-        </div>
+  
+  <!-- Global Toast Notification -->
+  <div id="global-toast" class="fixed top-5 right-5 z-50 transform transition-all duration-300 translate-y-[-100px] opacity-0 pointer-events-none">
+    <div class="bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-700">
+      <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+      <span id="toast-message" class="text-sm font-medium">Notification</span>
     </div>
+  </div>
 
-    <!-- Store Header / Navbar -->
   <!-- Store Header / Navbar -->
-<header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+  <header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16 w-full">
-            
-            <!-- Left Side: Custom Logo & Store Title -->
-            <div class="flex items-center gap-3">
-                <img id="store-logo-img" src="" alt="Store Logo" class="w-10 h-10 rounded-xl object-cover shadow-md border border-slate-700 bg-slate-900">
-                <div>
-                    <h1 id="store-nav-title" class="text-lg font-bold text-white leading-none">SHOP YA KAMAU</h1>
-                    <span class="text-xs text-slate-400 font-medium">Online Storefront</span>
-                </div>
-            </div>
-
-            <!-- Right Side: Social Media Icons & Cart Button -->
-            <div class="flex items-center gap-3">
-                <div class="flex items-center gap-2 border-r border-slate-800 pr-3">
-                    <a id="nav-whatsapp-link" href="#" target="_blank" class="p-2 text-slate-400 hover:text-emerald-400 transition" title="WhatsApp"><i class="fa-brands fa-whatsapp text-lg"></i></a>
-                    <a id="nav-instagram-link" href="#" target="_blank" class="p-2 text-slate-400 hover:text-pink-400 transition" title="Instagram"><i class="fa-brands fa-instagram text-lg"></i></a>
-                    <a id="nav-phone-link" href="#" class="p-2 text-slate-400 hover:text-sky-400 transition" title="Phone Call"><i class="fa-solid fa-phone text-base"></i></a>
-                </div>
-                <button onclick="toggleCartDrawer(true)" class="relative bg-slate-800 hover:bg-slate-700 text-white p-2.5 rounded-xl transition flex items-center gap-2 font-medium border border-slate-700">
-                    <i class="fa-solid fa-basket-shopping text-sky-400"></i>
-                    <span class="text-sm hidden sm:inline">Cart</span>
-                    <span id="cart-badge-count" class="bg-sky-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
-                </button>
-            </div>
-
+      <div class="flex items-center justify-between h-16 w-full">
+        <div class="flex items-center gap-3">
+          <img id="store-logo-img" src="" alt="Store Logo" class="w-10 h-10 rounded-xl object-cover shadow-md border border-slate-700 bg-slate-900">
+          <div>
+            <h1 id="store-nav-title" class="text-lg font-bold text-white leading-none">Urban Savannah Collection</h1>
+            <span class="text-xs text-slate-400 font-medium">Online Storefront</span>
+          </div>
         </div>
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 border-r border-slate-800 pr-3">
+            <a id="nav-whatsapp-link" href="#" target="_blank" class="p-2 text-slate-400 hover:text-emerald-400 transition" title="WhatsApp"><i class="fa-brands fa-whatsapp text-lg"></i></a>
+            <a id="nav-instagram-link" href="#" target="_blank" class="p-2 text-slate-400 hover:text-pink-400 transition" title="Instagram"><i class="fa-brands fa-instagram text-lg"></i></a>
+            <a id="nav-phone-link" href="#" class="p-2 text-slate-400 hover:text-sky-400 transition" title="Phone Call"><i class="fa-solid fa-phone text-base"></i></a>
+          </div>
+          <button onclick="toggleCartDrawer(true)" class="relative bg-slate-800 hover:bg-slate-700 text-white p-2.5 rounded-xl transition flex items-center gap-2 font-medium border border-slate-700">
+            <i class="fa-solid fa-basket-shopping text-sky-400"></i>
+            <span class="text-sm hidden sm:inline">Cart</span>
+            <span id="cart-badge-count" class="bg-sky-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+          </button>
+        </div>
+      </div>
     </div>
-</header>
+  </header>
 
-    <!-- Hero Banner -->
-    <section class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white py-12 px-4 border-b border-slate-800">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-            <div>
-                <span class="inline-block px-3 py-1 bg-sky-500/20 text-sky-300 border border-sky-500/30 text-xs font-semibold rounded-full mb-3 uppercase tracking-wider">Official Catalog</span>
-                <h2 id="hero-store-title" class="text-3xl sm:text-4xl font-extrabold tracking-tight">Explore Premium Products</h2>
-                <p id="hero-store-location" class="text-slate-400 mt-2 text-sm sm:text-base max-w-xl">
-                    <i class="fa-solid fa-location-dot text-sky-500 mr-1.5"></i> Nairobi, Kenya
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Main Store Body -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="flex flex-col md:flex-row gap-4 justify-between items-center mb-8">
-            <div class="relative w-full md:w-80">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                <input type="text" id="customer-search-input" oninput="renderCustomerProducts()" placeholder="Search catalog..." class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 text-white">
-            </div>
-            <div id="category-filter-container" class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2"></div>
-        </div>
-
-        <div id="customer-products-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
-
-        <div id="no-products-state" class="hidden text-center py-16 bg-slate-900 rounded-2xl border border-slate-800">
-            <i class="fa-solid fa-box-open text-3xl text-slate-500 mb-2"></i>
-            <h3 class="text-lg font-semibold text-slate-300">No products found</h3>
-        </div>
-    </main>
-
-    <!-- Footer & Google Maps -->
-    <footer class="bg-slate-900 text-slate-300 mt-auto border-t border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div>
-                    <h3 id="footer-store-name" class="text-lg font-bold text-white mb-2">Urban Savannah Collection</h3>
-                    <p class="text-xs text-slate-400 leading-relaxed">Direct shopping via WhatsApp, Call, Instagram, TikTok, Facebook, or SMS.</p>
-                </div>
-                <div>
-                    <h4 class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Location & Contact</h4>
-                    <p id="footer-address" class="text-xs text-slate-400 mb-2">Nairobi, Kenya</p>
-                    <p id="footer-phone" class="text-xs text-slate-400 mb-1"></p>
-                    <p id="footer-whatsapp" class="text-xs text-slate-400"></p>
-                </div>
-                <div>
-                    <h4 class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Store Preview Map</h4>
-                    <div id="footer-maps-iframe-container" class="w-full h-36 rounded-xl overflow-hidden border border-slate-800 bg-slate-950">
-                        <iframe id="footer-maps-iframe" src="" class="w-full h-full border-0" allowfullscreen="" loading="lazy"></iframe>
-                    </div>
-                </div>
-            </div>
-            <div class="border-t border-slate-800 mt-8 pt-6 flex flex-col sm:flex-row justify-between text-xs text-slate-500">
-                <p>© <span id="year-copy"></span> Urban Savannah Collection. All rights reserved.</p>
-                <div class="flex gap-4 mt-2 sm:mt-0">
-                    <a href="#" onclick="openLegalModal('terms')" class="hover:underline text-slate-400">Terms & Conditions</a>
-                    <a href="#" onclick="openLegalModal('privacy')" class="hover:underline text-slate-400">Privacy Policy</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Cart Drawer -->
-    <div id="cart-drawer-overlay" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-40 hidden" onclick="toggleCartDrawer(false)"></div>
-    <div id="cart-drawer" class="fixed top-0 right-0 h-full w-full sm:w-96 bg-slate-900 border-l border-slate-800 z-50 shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300">
-        <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950">
-            <h3 class="font-bold text-white"><i class="fa-solid fa-basket-shopping text-sky-400 mr-2"></i> Shopping Cart</h3>
-            <button onclick="toggleCartDrawer(false)" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center hover:bg-slate-700"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div id="cart-items-container" class="flex-1 overflow-y-auto p-4 space-y-4 divide-y divide-slate-800/60"></div>
-        <div class="p-4 border-t border-slate-800 bg-slate-950 space-y-3">
-            <div class="flex justify-between text-xs text-slate-400"><span>Subtotal</span><span id="cart-subtotal">$0.00</span></div>
-            <div class="flex justify-between text-xs text-slate-400"><span>Delivery Fee</span><span id="cart-delivery-fee">$0.00</span></div>
-            <div class="flex justify-between text-sm font-bold text-white pt-2 border-t border-slate-800"><span>Total Amount</span><span id="cart-total-price" class="text-sky-400">$0.00</span></div>
-            <button onclick="openCheckoutModal()" id="checkout-btn" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-3 rounded-xl shadow-lg transition">Proceed to Checkout</button>
-        </div>
+  <!-- Hero Banner -->
+  <section class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white py-12 px-4 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div>
+        <span class="inline-block px-3 py-1 bg-sky-500/20 text-sky-300 border border-sky-500/30 text-xs font-semibold rounded-full mb-3 uppercase tracking-wider">Official Catalog</span>
+        <h2 id="hero-store-title" class="text-3xl sm:text-4xl font-extrabold tracking-tight">Explore Premium Products</h2>
+        <p id="hero-store-location" class="text-slate-400 mt-2 text-sm sm:text-base max-w-xl">
+          <i class="fa-solid fa-location-dot text-sky-500 mr-1.5"></i> Nairobi, Kenya
+        </p>
+      </div>
     </div>
+  </section>
 
-    <!-- Checkout Modal -->
-    <div id="checkout-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
-            <div class="p-4 bg-slate-950 border-b border-slate-800 text-white flex items-center justify-between">
-                <h3 class="font-bold text-base"><i class="fa-solid fa-paper-plane text-emerald-400 mr-2"></i> Place Your Order</h3>
-                <button onclick="toggleCheckoutModal(false)" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <form id="checkout-form" onsubmit="submitCustomerOrder(event)" class="p-5 overflow-y-auto space-y-4 flex-1">
-                <div>
-                    <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Full Name *</label>
-                    <input type="text" id="cust-name" required placeholder="Jane Doe" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white">
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Phone Number *</label>
-                        <input type="tel" id="cust-phone" required placeholder="+254 700 000000" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Preferred Delivery Time</label>
-                        <input type="text" id="cust-time" placeholder="ASAP / Tomorrow 2:00 PM" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Delivery Address *</label>
-                    <textarea id="cust-address" rows="2" required placeholder="Nairobi Street, Apartment, Landmark..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></textarea>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Checkout Channel:</label>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                        <label class="border border-slate-800 p-2.5 rounded-xl flex items-center gap-2 cursor-pointer text-xs font-semibold bg-slate-950"><input type="radio" name="contact-channel" value="whatsapp" checked> WhatsApp</label>
-                        <label class="border border-slate-800 p-2.5 rounded-xl flex items-center gap-2 cursor-pointer text-xs font-semibold bg-slate-950"><input type="radio" name="contact-channel" value="instagram"> Instagram DM</label>
-                        <label class="border border-slate-800 p-2.5 rounded-xl flex items-center gap-2 cursor-pointer text-xs font-semibold bg-slate-950"><input type="radio" name="contact-channel" value="tiktok"> TikTok DM</label>
-                        <label class="border border-slate-800 p-2.5 rounded-xl flex items-center gap-2 cursor-pointer text-xs font-semibold bg-slate-950"><input type="radio" name="contact-channel" value="facebook"> Facebook DM</label>
-                        <label class="border border-slate-800 p-2.5 rounded-xl flex items-center gap-2 cursor-pointer text-xs font-semibold bg-slate-950"><input type="radio" name="contact-channel" value="phone"> Phone Call</label>
-                        <label class="border border-slate-800 p-2.5 rounded-xl flex items-center gap-2 cursor-pointer text-xs font-semibold bg-slate-950"><input type="radio" name="contact-channel" value="sms"> Phone Message</label>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2 pt-2">
-                    <input type="checkbox" id="terms-checkbox" required class="rounded bg-slate-950 border-slate-800 text-sky-600">
-                    <label for="terms-checkbox" class="text-xs text-slate-400">I agree to the <a href="#" onclick="openLegalModal('terms')" class="text-sky-400 underline">Terms and Conditions</a> and <a href="#" onclick="openLegalModal('privacy')" class="text-sky-400 underline">Privacy Policy</a>.</label>
-                </div>
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg transition">Confirm & Checkout Order</button>
-            </form>
-        </div>
+  <!-- Main Store Body -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex flex-col md:flex-row gap-4 justify-between items-center mb-8">
+      <div class="relative w-full md:w-80">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+        <input type="text" id="customer-search-input" oninput="renderCustomerProducts()" placeholder="Search catalog..." class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 text-white">
+      </div>
+      <div id="category-filter-container" class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2"></div>
     </div>
-
-    <!-- Product Detail Modal -->
-    <div id="product-detail-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full overflow-hidden shadow-2xl p-6 text-white">
-            <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
-                <h3 id="modal-prod-title" class="text-lg font-bold">Product Details</h3>
-                <button onclick="closeProductDetailModal()"><i class="fa-solid fa-xmark text-lg text-slate-400"></i></button>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <img id="modal-main-img" src="" class="w-full h-52 object-cover rounded-xl border border-slate-800 mb-2">
-                    <div id="modal-thumbs-container" class="flex gap-2 overflow-x-auto pb-1"></div>
-                </div>
-                <div class="flex flex-col justify-between">
-                    <div>
-                        <span id="modal-prod-category" class="bg-slate-800 text-slate-300 text-xs font-bold uppercase px-2.5 py-1 rounded-md border border-slate-700"></span>
-                        <p id="modal-prod-price" class="text-2xl font-extrabold text-sky-400 my-2"></p>
-                        <p id="modal-prod-desc" class="text-xs text-slate-400 leading-relaxed"></p>
-                    </div>
-                    <button id="modal-add-cart-btn" class="mt-4 w-full bg-sky-600 hover:bg-sky-500 text-white py-2.5 rounded-xl font-bold text-xs">Add to Cart</button>
-                </div>
-            </div>
-        </div>
+    <div id="customer-products-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+    <div id="no-products-state" class="hidden text-center py-16 bg-slate-900 rounded-2xl border border-slate-800">
+      <i class="fa-solid fa-box-open text-3xl text-slate-500 mb-2"></i>
+      <h3 class="text-lg font-semibold text-slate-300">No products found</h3>
     </div>
+  </main>
 
-    <!-- Legal Modal -->
-    <div id="legal-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl max-h-[80vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-3 border-b border-slate-800 pb-2">
-                <h3 id="legal-modal-title" class="font-bold text-lg text-white">Terms & Conditions</h3>
-                <button onclick="closeLegalModal()"><i class="fa-solid fa-xmark text-slate-400"></i></button>
-            </div>
-            <div id="legal-modal-content" class="text-xs text-slate-400 leading-relaxed whitespace-pre-line"></div>
+  <!-- Footer & Google Maps -->
+  <footer class="bg-slate-900 text-slate-300 mt-auto border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+          <h3 id="footer-store-name" class="text-lg font-bold text-white mb-2">Urban Savannah Collection</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">Direct shopping via WhatsApp, Call, Instagram, TikTok, Facebook, or SMS.</p>
         </div>
+        <div>
+          <h4 class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Location & Contact</h4>
+          <p id="footer-address" class="text-xs text-slate-400 mb-2">Nairobi, Kenya</p>
+          <p id="footer-phone" class="text-xs text-slate-400 mb-1"></p>
+          <p id="footer-whatsapp" class="text-xs text-slate-400"></p>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Store Preview Map</h4>
+          <div id="footer-maps-iframe-container" class="w-full h-36 rounded-xl overflow-hidden border border-slate-800 bg-slate-950">
+            <iframe id="footer-maps-iframe" src="" class="w-full h-full border-0" allowfullscreen="" loading="lazy"></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-slate-800 mt-8 pt-6 flex flex-col sm:flex-row justify-between text-xs text-slate-500">
+        <p>&copy; <span id="year-copy"></span> Urban Savannah Collection. All rights reserved.</p>
+        <div class="flex gap-4 mt-2 sm:mt-0">
+          <a href="#" onclick="openLegalModal('terms')" class="hover:underline text-slate-400">Terms & Conditions</a>
+          <a href="#" onclick="openLegalModal('privacy')" class="hover:underline text-slate-400">Privacy Policy</a>
+        </div>
+      </div>
     </div>
+  </footer>
 
-    <script src="customer.js"></script>
+  <!-- Cart Drawer -->
+  <div id="cart-drawer-overlay" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-40 hidden" onclick="toggleCartDrawer(false)"></div>
+  <div id="cart-drawer" class="fixed top-0 right-0 h-full w-full sm:w-96 bg-slate-900 border-l border-slate-800 z-50 shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300">
+    <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950">
+      <h3 class="font-bold text-white"><i class="fa-solid fa-basket-shopping text-sky-400 mr-2"></i> Shopping Cart</h3>
+      <button onclick="toggleCartDrawer(false)" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center hover:bg-slate-700"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="cart-items-container" class="flex-1 overflow-y-auto p-4 space-y-4 divide-y divide-slate-800/60"></div>
+    <div class="p-4 border-t border-slate-800 bg-slate-950 space-y-3">
+      <div class="flex justify-between text-xs text-slate-400"><span>Subtotal</span><span id="cart-subtotal">$0.00</span></div>
+      <div class="flex justify-between text-xs text-slate-400"><span>Delivery Fee</span><span id="cart-delivery-fee">$0.00</span></div>
+      <div class="flex justify-between text-sm font-bold text-white pt-2 border-t border-slate-800"><span>Total Amount</span><span id="cart-total-price" class="text-sky-400">$0.00</span></div>
+      <button onclick="openCheckoutModal()" id="checkout-btn" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-3 rounded-xl shadow-lg transition">Proceed to Checkout</button>
+    </div>
+  </div>
+
+  <!-- Checkout Modal -->
+  <div id="checkout-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+      <div class="p-4 bg-slate-950 border-b border-slate-800 text-white flex items-center justify-between">
+        <h3 class="font-bold text-base"><i class="fa-solid fa-paper-plane text-emerald-400 mr-2"></i> Place Your Order</h3>
+        <button onclick="toggleCheckoutModal(false)" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form id="checkout-form" onsubmit="submitCustomerOrder(event)" class="p-5 overflow-y-auto space-y-4 flex-1">
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Full Name *</label>
+          <input type="text" id="cust-name" required placeholder="Jane Doe" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white">
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Phone Number *</label>
+            <input type="tel" id="cust-phone" required placeholder="+254 700 000000" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Preferred Delivery Time</label>
+            <input type="text" id="cust-time" placeholder="ASAP / Tomorrow 2:00 PM" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Delivery Address *</label>
+          <textarea id="cust-address" rows="2" required placeholder="Nairobi Street, Apartment, Landmark..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Checkout Channel:</label>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <label class="border border-slate-800 p-2.5 rounded-xl flex items-center gap-2 cursor-pointer text-xs font-semibold bg-slate-950"><input type="radio" name="contact-channel" value="whatsapp" checked> WhatsApp</label>
+            <label class="border border-slate-800 p-2.5 rounded-xl flex items-center gap-2 cursor-pointer text-xs font-semibold bg-slate-950"><input type="radio" name="contact-channel" value="instagram"> Instagram DM</label>
+            <label class="border border-slate-800 p-2.5 rounded-xl flex items-center gap-2 cursor-pointer text-xs font-semibold bg-slate-950"><input type="radio" name="contact-channel" value="tiktok"> TikTok DM</label>
+            <label class="border border-slate-800 p-2.5 rounded-xl flex items-center gap-2 cursor-pointer text-xs font-semibold bg-slate-950"><input type="radio" name="contact-channel" value="facebook"> Facebook DM</label>
+            <label class="border border-slate-800 p-2.5 rounded-xl flex items-center gap-2 cursor-pointer text-xs font-semibold bg-slate-950"><input type="radio" name="contact-channel" value="phone"> Phone Call</label>
+            <label class="border border-slate-800 p-2.5 rounded-xl flex items-center gap-2 cursor-pointer text-xs font-semibold bg-slate-950"><input type="radio" name="contact-channel" value="sms"> Phone Message</label>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 pt-2">
+          <input type="checkbox" id="terms-checkbox" required class="rounded bg-slate-950 border-slate-800 text-sky-600">
+          <label for="terms-checkbox" class="text-xs text-slate-400">I agree to the <a href="#" onclick="openLegalModal('terms')" class="text-sky-400 underline">Terms and Conditions</a> and <a href="#" onclick="openLegalModal('privacy')" class="text-sky-400 underline">Privacy Policy</a>.</label>
+        </div>
+        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg transition">Confirm & Checkout Order</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Product Detail Modal -->
+  <div id="product-detail-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full overflow-hidden shadow-2xl p-6 text-white">
+      <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
+        <h3 id="modal-prod-title" class="text-lg font-bold">Product Details</h3>
+        <button onclick="closeProductDetailModal()"><i class="fa-solid fa-xmark text-lg text-slate-400"></i></button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <img id="modal-main-img" src="" class="w-full h-52 object-cover rounded-xl border border-slate-800 mb-2">
+          <div id="modal-thumbs-container" class="flex gap-2 overflow-x-auto pb-1"></div>
+        </div>
+        <div class="flex flex-col justify-between">
+          <div>
+            <span id="modal-prod-category" class="bg-slate-800 text-slate-300 text-xs font-bold uppercase px-2.5 py-1 rounded-md border border-slate-700"></span>
+            <p id="modal-prod-price" class="text-2xl font-extrabold text-sky-400 my-2"></p>
+            <p id="modal-prod-desc" class="text-xs text-slate-400 leading-relaxed"></p>
+          </div>
+          <button id="modal-add-cart-btn" class="mt-4 w-full bg-sky-600 hover:bg-sky-500 text-white py-2.5 rounded-xl font-bold text-xs">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legal Modal -->
+  <div id="legal-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl max-h-[80vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-3 border-b border-slate-800 pb-2">
+        <h3 id="legal-modal-title" class="font-bold text-lg text-white">Terms & Conditions</h3>
+        <button onclick="closeLegalModal()"><i class="fa-solid fa-xmark text-slate-400"></i></button>
+      </div>
+      <div id="legal-modal-content" class="text-xs text-slate-400 leading-relaxed whitespace-pre-line"></div>
+    </div>
+  </div>
+
+  <script type="module" src="customer.js"></script>
 </body>
 </html>
