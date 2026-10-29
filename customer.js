@@ -29,7 +29,7 @@ const DEFAULT_SETTINGS = {
   privacy: "Information collected during checkout is strictly used for order processing and delivery."
 };
 
-let settings = JSON.parse(localStorage.getItem('Urban Savannah Collection_settings')) || DEFAULT_SETTINGS;
+let settings = DEFAULT_SETTINGS;
 let products = [];
 let cart = JSON.parse(localStorage.getItem('Urban Savannah Collection_cart')) || [];
 let selectedCategory = 'All';
@@ -52,9 +52,19 @@ window.onload = function() {
   if (yearCopy) {
     yearCopy.textContent = new Date().getFullYear();
   }
-  syncCustomerStoreData();
-  updateCartUI();
   
+  // Real-time Firestore listener for settings
+  onSnapshot(doc(db, "settings", "store_settings"), (docSnap) => {
+    if (docSnap.exists()) {
+      settings = { ...DEFAULT_SETTINGS, ...docSnap.data() };
+    } else {
+      settings = DEFAULT_SETTINGS;
+    }
+    syncCustomerStoreData();
+    updateCartUI();
+    renderCustomerProducts();
+  });
+
   // Real-time Firestore listener for products
   onSnapshot(collection(db, "products"), (snapshot) => {
     products = snapshot.docs.map(doc => ({
@@ -63,6 +73,8 @@ window.onload = function() {
     }));
     renderCustomerProducts();
   });
+
+  updateCartUI();
 };
 
 function syncCustomerStoreData() {
@@ -94,7 +106,7 @@ function syncCustomerStoreData() {
   if (mapsIframe && settings.mapsUrl) mapsIframe.src = settings.mapsUrl;
   
   const navWa = document.getElementById('nav-whatsapp-link');
-  if (navWa) navWa.href = `https://wa.me/${settings.whatsapp.replace(/[^0-9]/g, '')}`;
+  if (navWa) navWa.href = `https://wa.me/${settings.whatsapp ? settings.whatsapp.replace(/[^0-9]/g, '') : ''}`;
   
   const navPhone = document.getElementById('nav-phone-link');
   if (navPhone) navPhone.href = `tel:${settings.phone}`;
@@ -297,7 +309,6 @@ window.submitCustomerOrder = async function(e) {
   };
   
   try {
-    // Save order directly to Firestore "orders" collection using orderId as document ID
     await setDoc(doc(db, "orders", orderId), newOrder);
   } catch (err) {
     console.error("Error saving order to Firestore:", err);
@@ -314,7 +325,7 @@ window.submitCustomerOrder = async function(e) {
   const orderText = `${greeting}:\n\n*Order ID:* #${newOrder.id}\n*Nairobi Time:* ${nairobiTime}\n\n*Customer Details:*\nName: ${name}\nPhone: ${phone}\nAddress: ${address}\nPreferred Time: ${timePref}\n\n*Items Ordered:*\n${itemsSummary}\n\n*TOTAL PAYABLE:* ${formatMoney(total)}`;
   
   if (channel === 'whatsapp') {
-    window.open(`https://wa.me/${settings.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(orderText)}`, '_blank');
+    window.open(`https://wa.me/${settings.whatsapp ? settings.whatsapp.replace(/[^0-9]/g, '') : ''}?text=${encodeURIComponent(orderText)}`, '_blank');
   } else if (channel === 'instagram') {
     navigator.clipboard.writeText(orderText);
     const cleanIg = settings.instagram ? settings.instagram.replace('@','').split('/').pop() : '';
