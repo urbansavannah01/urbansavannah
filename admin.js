@@ -1,7 +1,14 @@
 import { firebaseConfig } from "./firebase-config.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-analytics.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+import { 
+  getFirestore, 
+  collection, 
+  doc, 
+  setDoc, 
+  deleteDoc, 
+  onSnapshot 
+} from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
@@ -29,8 +36,8 @@ const DEFAULT_SETTINGS = {
 let settings = JSON.parse(localStorage.getItem('Urban Savannah Collection_settings')) || DEFAULT_SETTINGS;
 if (!settings.adminPassword) settings.adminPassword = DEFAULT_SETTINGS.adminPassword;
 
-let products = JSON.parse(localStorage.getItem('Urban Savannah Collection_products')) || [];
-let orders = JSON.parse(localStorage.getItem('Urban Savannah Collection_orders')) || [];
+let products = [];
+let orders = [];
 
 function formatMoney(amount) {
   return `${settings.currency || '$'}${parseFloat(amount).toFixed(2)}`;
@@ -47,15 +54,29 @@ window.onload = function() {
   }
   
   syncAdminData();
-  renderAdminOrders();
-  renderAdminProducts();
   loadPoliciesForm();
+
+  // Real-time Firestore listener for products
+  onSnapshot(collection(db, "products"), (snapshot) => {
+    products = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    renderAdminProducts();
+  });
+
+  // Real-time Firestore listener for orders
+  onSnapshot(collection(db, "orders"), (snapshot) => {
+    orders = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    renderAdminOrders();
+  });
 };
 
 function saveAdminState() {
   localStorage.setItem('Urban Savannah Collection_settings', JSON.stringify(settings));
-  localStorage.setItem('Urban Savannah Collection_products', JSON.stringify(products));
-  localStorage.setItem('Urban Savannah Collection_orders', JSON.stringify(orders));
   syncAdminData();
 }
 
@@ -134,10 +155,10 @@ window.renderAdminOrders = function() {
     <tr class="hover:bg-slate-800/40 border-b border-slate-800/60">
       <td class="py-3.5 px-4 font-mono"><span class="font-bold text-white block">${order.id}</span><span class="text-[11px] text-slate-400">${order.dateTime}</span></td>
       <td class="py-3.5 px-4"><div class="font-semibold text-slate-200">${order.customerName}</div><div class="text-xs text-slate-400">${order.customerPhone}</div></td>
-      <td class="py-3.5 px-4 text-xs">${order.items.map(i => `${i.qty}x ${i.title}`).join(', ')}</td>
+      <td class="py-3.5 px-4 text-xs">${order.items ? order.items.map(i => `${i.qty}x ${i.title}`).join(', ') : ''}</td>
       <td class="py-3.5 px-4 text-xs uppercase font-bold text-sky-400">${order.contactChannel || 'WhatsApp'}</td>
       <td class="py-3.5 px-4 text-xs text-slate-300">${settings.paymentMethods || 'Standard'}</td>
-      <td class="py-3.5 px-4 font-bold text-white">${formatMoney(order.total)}</td>
+      <td class="py-3.5 px-4 font-bold text-white">${formatMoney(order.total || 0)}</td>
       <td class="py-3.5 px-4"><span class="px-2.5 py-1 rounded-full text-xs font-semibold ${order.status === 'Delivered' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}">${order.status}</span></td>
       <td class="py-3.5 px-4 text-right space-x-1">
         <button onclick="toggleOrderStatus('${order.id}')" class="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs" title="Toggle Status"><i class="fa-solid fa-rotate"></i></button>
@@ -148,20 +169,25 @@ window.renderAdminOrders = function() {
   `).join('');
 };
 
-window.toggleOrderStatus = function(id) {
+window.toggleOrderStatus = async function(id) {
   const o = orders.find(ord => ord.id === id);
   if (o) {
     o.status = o.status === 'Pending Delivery' ? 'Delivered' : 'Pending Delivery';
-    saveAdminState();
-    renderAdminOrders();
+    try {
+      await setDoc(doc(db, "orders", id), o, { merge: true });
+    } catch (err) {
+      console.error("Error updating order status in Firestore:", err);
+    }
   }
 };
 
-window.deleteOrder = function(id) {
+window.deleteOrder = async function(id) {
   if (confirm("Are you sure you want to permanently delete this order?")) {
-    orders = orders.filter(o => o.id !== id);
-    saveAdminState();
-    renderAdminOrders();
+    try {
+      await deleteDoc(doc(db, "orders", id));
+    } catch (err) {
+      console.error("Error deleting order from Firestore:", err);
+    }
   }
 };
 
@@ -220,7 +246,7 @@ window.renderAdminProducts = function() {
       <div>
         <img src="${product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/600x400'}" class="w-full h-36 object-cover rounded-xl mb-3 bg-slate-950">
         <h4 class="font-bold text-white text-sm">${product.title}</h4>
-        <p class="text-xs text-sky-400 font-bold mt-1">${formatMoney(product.price)} (${product.images.length} photos)</p>
+        <p class="text-xs text-sky-400 font-bold mt-1">${formatMoney(product.price)} (${product.images ? product.images.length : 0} photos)</p>
       </div>
       <div class="mt-4 pt-3 border-t border-slate-800 flex justify-end gap-2">
         <button onclick="openProductModal('${product.id}')" class="px-3 py-1.5 bg-slate-800 text-xs text-slate-200 rounded-lg">Edit</button>
@@ -243,7 +269,9 @@ window.openProductModal = function(id = null) {
       document.getElementById('prod-category').value = p.category;
       document.getElementById('prod-desc').value = p.description;
       document.getElementById('product-modal-title').textContent = "Edit Product Details";
-      p.images.forEach(img => addImageUrlInput(img));
+      if (p.images) {
+        p.images.forEach(img => addImageUrlInput(img));
+      }
     }
   } else {
     const prodForm = document.getElementById('product-form');
@@ -259,7 +287,7 @@ window.closeProductModal = function() {
   document.getElementById('product-modal').classList.add('hidden');
 };
 
-window.saveProduct = function(e) {
+window.saveProduct = async function(e) {
   e.preventDefault();
   const id = document.getElementById('prod-id').value;
   const title = document.getElementById('prod-title').value;
@@ -274,25 +302,25 @@ window.saveProduct = function(e) {
     return;
   }
   
-  if (id) {
-    const idx = products.findIndex(p => p.id === id);
-    if (idx !== -1) {
-      products[idx] = { id, title, price, category, images, description };
-    }
-  } else {
-    products.push({ id: 'prod_' + Date.now(), title, price, category, images, description });
+  const productId = id ? id : ('prod_' + Date.now());
+  const productData = { title, price, category, images, description };
+  
+  try {
+    await setDoc(doc(db, "products", productId), productData);
+  } catch (err) {
+    console.error("Error saving product to Firestore:", err);
   }
   
-  saveAdminState();
-  renderAdminProducts();
   closeProductModal();
 };
 
-window.deleteProduct = function(id) {
+window.deleteProduct = async function(id) {
   if (confirm("Are you sure you want to delete this product?")) {
-    products = products.filter(p => p.id !== id);
-    saveAdminState();
-    renderAdminProducts();
+    try {
+      await deleteDoc(doc(db, "products", id));
+    } catch (err) {
+      console.error("Error deleting product from Firestore:", err);
+    }
   }
 };
 
@@ -372,15 +400,15 @@ window.printOrderReceipt = function(orderId) {
   document.getElementById('print-checkout-channel').textContent = order.contactChannel || 'WhatsApp';
   document.getElementById('print-payment-methods').textContent = settings.paymentMethods || 'M-Pesa / Cash / Card';
   
-  document.getElementById('print-items-body').innerHTML = order.items.map(i => `
+  document.getElementById('print-items-body').innerHTML = order.items ? order.items.map(i => `
     <tr style="border-bottom: 1px solid #cbd5e1;">
       <td style="padding: 6px 0;"><img src="${i.image}" style="width: 36px; height: 36px; object-fit: cover; border-radius: 4px;" onerror="this.src='https://placehold.co/100x100'"></td>
       <td style="padding: 6px 0; font-weight: bold;">${i.title}</td>
       <td style="padding: 6px 0; text-align: center;">${i.qty}</td>
       <td style="padding: 6px 0; text-align: right;">${formatMoney(i.price * i.qty)}</td>
     </tr>
-  `).join('');
+  `).join('') : '';
   
-  document.getElementById('print-total').textContent = formatMoney(order.total);
+  document.getElementById('print-total').textContent = formatMoney(order.total || 0);
   window.print();
 };
