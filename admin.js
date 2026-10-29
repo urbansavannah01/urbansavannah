@@ -1,14 +1,14 @@
 import { firebaseConfig } from "./firebase-config.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-analytics.js";
-import { 
-  getFirestore, 
-  collection, 
-  doc, 
-  setDoc, 
-  deleteDoc, 
+import {
+  getFirestore,
+  collection,
+  doc,
+  setDoc,
+  deleteDoc,
   getDoc,
-  onSnapshot 
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
 const app = initializeApp(firebaseConfig);
@@ -29,17 +29,17 @@ const DEFAULT_SETTINGS = {
   mapsUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15955.292672314545!2d36.817223!3d-1.286389!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1172d84d49a7%3A0xf7cf0254b297924c!2sNairobi!5e0!3m2!1sen!2ske!4v1650000000000!5m2!1sen!2ske",
   deliveryFee: 5.00,
   bgUrl: "https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=1600&q=80",
-  adminPassword: "123456789", // <-- CHANGE THIS TO RECOVER PASSWORD IF LOST
+  adminPassword: "admin123",
   terms: "Welcome to Urban Savannah Collection. Purchases are governed by local delivery guidelines in Nairobi, Kenya.",
   privacy: "Information collected during checkout is strictly used for order processing and delivery."
 };
 
-let settings = DEFAULT_SETTINGS;
+let settings = { ...DEFAULT_SETTINGS };
 let products = [];
 let orders = [];
 
 function formatMoney(amount) {
-  return `${settings.currency || '$'}${parseFloat(amount).toFixed(2)}`;
+  return `${settings.currency || '$'}${parseFloat(amount || 0).toFixed(2)}`;
 }
 
 window.onload = async function() {
@@ -57,36 +57,35 @@ window.onload = async function() {
     const docSnap = await getDoc(settingsRef);
     if (docSnap.exists()) {
       const cloudSettings = docSnap.data();
-      settings = { 
-        ...DEFAULT_SETTINGS, 
-        ...cloudSettings, 
-        adminPassword: cloudSettings.adminPassword || DEFAULT_SETTINGS.adminPassword 
+      settings = {
+        ...DEFAULT_SETTINGS,
+        ...cloudSettings,
+        adminPassword: cloudSettings.adminPassword || DEFAULT_SETTINGS.adminPassword
       };
     } else {
-      settings = DEFAULT_SETTINGS;
+      settings = { ...DEFAULT_SETTINGS };
       await setDoc(settingsRef, settings);
     }
   } catch (err) {
     console.error("Error loading settings from cloud:", err);
-    settings = DEFAULT_SETTINGS;
+    settings = { ...DEFAULT_SETTINGS };
   }
 
+  // Real-time listener for Firestore Settings
   onSnapshot(doc(db, "settings", "store_settings"), (docSnap) => {
     if (docSnap.exists()) {
       const cloudSettings = docSnap.data();
-      settings = { 
-        ...settings, 
-        ...cloudSettings, 
-        adminPassword: cloudSettings.adminPassword || settings.adminPassword 
+      settings = {
+        ...settings,
+        ...cloudSettings,
+        adminPassword: cloudSettings.adminPassword || settings.adminPassword
       };
       syncAdminData();
       loadPoliciesForm();
     }
   });
-  
-  syncAdminData();
-  loadPoliciesForm();
 
+  // Real-time listener for Products
   onSnapshot(collection(db, "products"), (snapshot) => {
     products = snapshot.docs.map(doc => ({
       id: doc.id,
@@ -95,6 +94,7 @@ window.onload = async function() {
     renderAdminProducts();
   });
 
+  // Real-time listener for Orders
   onSnapshot(collection(db, "orders"), (snapshot) => {
     orders = snapshot.docs.map(doc => ({
       id: doc.id,
@@ -102,15 +102,17 @@ window.onload = async function() {
     }));
     renderAdminOrders();
   });
+
+  syncAdminData();
+  loadPoliciesForm();
 };
 
 async function saveAdminState() {
   try {
-    await setDoc(doc(db, "settings", "store_settings"), settings);
+    await setDoc(doc(db, "settings", "store_settings"), settings, { merge: true });
   } catch (err) {
     console.error("Error saving settings to cloud:", err);
   }
-  syncAdminData();
 }
 
 window.logoutAdmin = function() {
@@ -123,7 +125,6 @@ function syncAdminData() {
   if (bgBody && settings.bgUrl) {
     bgBody.style.backgroundImage = `url('${settings.bgUrl}')`;
   }
-  
   const fields = {
     'setting-logo-url': settings.logoUrl,
     'setting-store-name': settings.storeName,
@@ -138,7 +139,6 @@ function syncAdminData() {
     'setting-maps-url': settings.mapsUrl,
     'setting-bg-url': settings.bgUrl
   };
-
   for (const [id, val] of Object.entries(fields)) {
     const el = document.getElementById(id);
     if (el) el.value = val || '';
@@ -150,14 +150,7 @@ window.handleAdminLogin = async function(e) {
   const passwordInput = document.getElementById('admin-password-input');
   const inputPass = passwordInput ? passwordInput.value : '';
   
-  // Checks against active cloud/local password OR code-level recovery fallback from DEFAULT_SETTINGS
-  if (inputPass === settings.adminPassword || inputPass === DEFAULT_SETTINGS.adminPassword) {
-    // If recovery password from code was used, automatically sync it to cloud as the active password
-    if (inputPass === DEFAULT_SETTINGS.adminPassword && inputPass !== settings.adminPassword) {
-      settings.adminPassword = DEFAULT_SETTINGS.adminPassword;
-      await saveAdminState();
-    }
-
+  if (inputPass === settings.adminPassword) {
     localStorage.setItem('Urban Savannah Collection_admin_auth', 'true');
     const loginScreen = document.getElementById('admin-login-screen');
     if (loginScreen) loginScreen.classList.add('hidden');
@@ -177,7 +170,6 @@ window.switchAdminTab = function(tab) {
       btnEl.classList.add('text-slate-400');
     }
   });
-  
   const activeTab = document.getElementById(`admin-tab-${tab}`);
   const activeBtn = document.getElementById(`tab-btn-${tab}`);
   if (activeTab) activeTab.classList.remove('hidden');
@@ -190,7 +182,6 @@ window.switchAdminTab = function(tab) {
 window.renderAdminOrders = function() {
   const tbody = document.getElementById('admin-orders-table-body');
   if (!tbody) return;
-  
   tbody.innerHTML = orders.map(order => `
     <tr class="hover:bg-slate-800/40 border-b border-slate-800/60">
       <td class="py-3.5 px-4 font-mono"><span class="font-bold text-white block">${order.id}</span><span class="text-[11px] text-slate-400">${order.dateTime}</span></td>
@@ -214,7 +205,7 @@ window.toggleOrderStatus = async function(id) {
   if (o) {
     o.status = o.status === 'Pending Delivery' ? 'Delivered' : 'Pending Delivery';
     try {
-      await setDoc(doc(db, "orders", id), o, { merge: true });
+      await setDoc(doc(db, "orders", id), { status: o.status }, { merge: true });
     } catch (err) {
       console.error("Error updating order status in Firestore:", err);
     }
@@ -234,21 +225,19 @@ window.deleteOrder = async function(id) {
 window.exportOrdersToExcel = function() {
   let template = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
   <head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Orders</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head>
-  <body><table border="1">
-  <tr style="background-color:#0284c7; color:#ffffff; font-weight:bold;">
-  <th>Order ID</th><th>Nairobi Date & Time</th><th>Customer Name</th><th>Phone</th><th>Delivery Address</th><th>Checkout Method</th><th>Total</th><th>Status</th>
-  </tr>`;
+  <body><table border="1"><tr style="background-color:#0284c7; color:#ffffff; font-weight:bold;">
+  <th>Order ID</th><th>Nairobi Date & Time</th><th>Customer Name</th><th>Phone</th><th>Delivery Address</th><th>Checkout Method</th><th>Total</th><th>Status</th></tr>`;
   
   orders.forEach(o => {
     template += `<tr><td>${o.id}</td><td>${o.dateTime}</td><td>${o.customerName}</td><td>${o.customerPhone}</td><td>${o.customerAddress}</td><td>${o.contactChannel || 'WhatsApp'}</td><td>${o.total}</td><td>${o.status}</td></tr>`;
   });
   
-  template += `</table></body></html>`;
+  template += '</table></body></html>';
   const blob = new Blob([template], { type: 'application/vnd.ms-excel' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `Urban Savannah Collection_orders_${Date.now()}.xls`;
+  a.download = `Urban_Savannah_Collection_orders_${Date.now()}.xls`;
   a.click();
 };
 
@@ -261,7 +250,7 @@ window.exportOrdersToSpreadsheet = function() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `Urban Savannah Collection_orders_${Date.now()}.csv`;
+  a.download = `Urban_Savannah_Collection_orders_${Date.now()}.csv`;
   a.click();
 };
 
@@ -280,7 +269,6 @@ window.addImageUrlInput = function(value = '') {
 window.renderAdminProducts = function() {
   const grid = document.getElementById('admin-products-grid');
   if (!grid) return;
-  
   grid.innerHTML = products.map(product => `
     <div class="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden p-4 flex flex-col justify-between">
       <div>
@@ -299,7 +287,6 @@ window.renderAdminProducts = function() {
 window.openProductModal = function(id = null) {
   const container = document.getElementById('image-urls-container');
   if (container) container.innerHTML = '';
-  
   if (id) {
     const p = products.find(prod => prod.id === id);
     if (p) {
@@ -336,21 +323,20 @@ window.saveProduct = async function(e) {
   const description = document.getElementById('prod-desc').value;
   const imgInputs = document.querySelectorAll('.prod-img-input');
   const images = Array.from(imgInputs).map(i => i.value.trim()).filter(Boolean);
-  
+
   if (images.length === 0) {
     alert("Please add at least one product image URL.");
     return;
   }
-  
+
   const productId = id ? id : ('prod_' + Date.now());
   const productData = { title, price, category, images, description };
-  
+
   try {
     await setDoc(doc(db, "products", productId), productData);
   } catch (err) {
     console.error("Error saving product to Firestore:", err);
   }
-  
   closeProductModal();
 };
 
@@ -364,7 +350,7 @@ window.deleteProduct = async function(id) {
   }
 };
 
-window.saveAdminSettings = function(e) {
+window.saveAdminSettings = async function(e) {
   e.preventDefault();
   settings.storeName = document.getElementById('setting-store-name').value;
   settings.logoUrl = document.getElementById('setting-logo-url').value.trim();
@@ -377,13 +363,11 @@ window.saveAdminSettings = function(e) {
   settings.paymentMethods = document.getElementById('setting-payment-methods').value;
   settings.location = document.getElementById('setting-store-location').value;
   settings.mapsUrl = document.getElementById('setting-maps-url').value;
-  
   const bgInput = document.getElementById('setting-bg-url').value.trim();
   if (bgInput) {
     settings.bgUrl = bgInput;
   }
-  
-  saveAdminState();
+  await saveAdminState();
   alert("Store settings saved successfully to cloud!");
 };
 
@@ -399,16 +383,17 @@ window.handleChangePassword = async function(e) {
   e.preventDefault();
   const oldP = document.getElementById('old-pass').value;
   const newP = document.getElementById('new-pass').value;
-  
-  if (oldP !== settings.adminPassword && oldP !== DEFAULT_SETTINGS.adminPassword) {
+
+  if (oldP !== settings.adminPassword) {
     alert("Current password is incorrect.");
     return;
   }
-  
+
   settings.adminPassword = newP;
-  DEFAULT_SETTINGS.adminPassword = newP;
   await saveAdminState();
   toggleChangePassModal(false);
+  document.getElementById('old-pass').value = '';
+  document.getElementById('new-pass').value = '';
   alert("Password updated successfully and synced to cloud!");
 };
 
@@ -419,18 +404,18 @@ function loadPoliciesForm() {
   if (pPrivacy) pPrivacy.value = settings.privacy || DEFAULT_SETTINGS.privacy;
 }
 
-window.savePolicies = function(e) {
+window.savePolicies = async function(e) {
   e.preventDefault();
   settings.terms = document.getElementById('policy-terms').value;
   settings.privacy = document.getElementById('policy-privacy').value;
-  saveAdminState();
+  await saveAdminState();
   alert("Policies updated successfully to cloud!");
 };
 
 window.printOrderReceipt = function(orderId) {
   const order = orders.find(o => o.id === orderId);
   if (!order) return;
-  
+
   document.getElementById('print-store-name').textContent = settings.storeName;
   document.getElementById('print-store-address').textContent = settings.location;
   document.getElementById('print-order-id').textContent = order.id;
@@ -440,7 +425,7 @@ window.printOrderReceipt = function(orderId) {
   document.getElementById('print-cust-address').textContent = order.customerAddress;
   document.getElementById('print-checkout-channel').textContent = order.contactChannel || 'WhatsApp';
   document.getElementById('print-payment-methods').textContent = settings.paymentMethods || 'M-Pesa / Cash / Card';
-  
+
   document.getElementById('print-items-body').innerHTML = order.items ? order.items.map(i => `
     <tr style="border-bottom: 1px solid #cbd5e1;">
       <td style="padding: 6px 0;"><img src="${i.image}" style="width: 36px; height: 36px; object-fit: cover; border-radius: 4px;" onerror="this.src='https://placehold.co/100x100'"></td>
@@ -449,7 +434,7 @@ window.printOrderReceipt = function(orderId) {
       <td style="padding: 6px 0; text-align: right;">${formatMoney(i.price * i.qty)}</td>
     </tr>
   `).join('') : '';
-  
+
   document.getElementById('print-total').textContent = formatMoney(order.total || 0);
   window.print();
 };
