@@ -1,3 +1,14 @@
+// Line 1: Import config first
+import { firebaseConfig } from "./firebase-config.js";
+
+// Line 3: Import Firebase SDK packages next
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+// Line 7: Initialize Firebase using your config
+const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+
 const DEFAULT_SETTINGS = {
     storeName: "Urban Savannah Collection",
     logoUrl: "https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=200&q=80",
