@@ -29,7 +29,7 @@ const DEFAULT_SETTINGS = {
   mapsUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15955.292672314545!2d36.817223!3d-1.286389!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1172d84d49a7%3A0xf7cf0254b297924c!2sNairobi!5e0!3m2!1sen!2ske!4v1650000000000!5m2!1sen!2ske",
   deliveryFee: 5.00,
   bgUrl: "https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=1600&q=80",
-  adminPassword: "QWERTY123", // <-- CHANGE THIS MANUALLY ON GITHUB TO RECOVER PASSWORD
+  adminPassword: "admin123", // <-- CHANGE THIS MANUALLY ON GITHUB TO RECOVER PASSWORD
   terms: "Welcome to Urban Savannah Collection. Purchases are governed by local delivery guidelines in Nairobi, Kenya.",
   privacy: "Information collected during checkout is strictly used for order processing and delivery."
 };
