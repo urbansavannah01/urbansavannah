@@ -12,8 +12,6 @@ export const db = getFirestore(app);
 const DEFAULT_SETTINGS = {
     storeName: "Urban Savannah Collection",
     logoUrl: "https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=200&q=80",
-    // ... rest of settings
-    storeName: "Urban Savannah Collection",
     currency: "Ksh",
     phone: "+254 00000000",
     whatsapp: "254700000000",
@@ -43,7 +41,8 @@ window.onload = function() {
     // Check if admin was already authenticated in this session
     const isAuth = localStorage.getItem('Urban Savannah Collection_admin_auth');
     if (isAuth === 'true') {
-        document.getElementById('admin-login-screen').classList.add('hidden');
+        const loginScreen = document.getElementById('admin-login-screen');
+        if (loginScreen) loginScreen.classList.add('hidden');
     }
 
     syncAdminData();
@@ -66,52 +65,93 @@ function logoutAdmin() {
 }
 
 function syncAdminData() {
-
-    if (settings.bgUrl) {
-        document.getElementById('admin-body-bg').style.backgroundImage = `url('${settings.bgUrl}')`;
+    const bgBody = document.getElementById('admin-body-bg');
+    if (bgBody && settings.bgUrl) {
+        bgBody.style.backgroundImage = `url('${settings.bgUrl}')`;
     }
-        // ... existing code ...
-    document.getElementById('setting-logo-url').value = settings.logoUrl || '';
-    document.getElementById('setting-store-name').value = settings.storeName;
-    // ... rest of code
+    
+    const setLogo = document.getElementById('setting-logo-url');
+    if (setLogo) setLogo.value = settings.logoUrl || '';
 
-    document.getElementById('setting-store-name').value = settings.storeName;
-    document.getElementById('setting-store-currency').value = settings.currency;
-    document.getElementById('setting-store-phone').value = settings.phone;
-    document.getElementById('setting-store-whatsapp').value = settings.whatsapp;
-    document.getElementById('setting-store-instagram').value = settings.instagram || '';
-    document.getElementById('setting-store-tiktok').value = settings.tiktok || '';
-    document.getElementById('setting-store-facebook').value = settings.facebook || '';
-    document.getElementById('setting-payment-methods').value = settings.paymentMethods || '';
-    document.getElementById('setting-store-location').value = settings.location;
-    document.getElementById('setting-maps-url').value = settings.mapsUrl || '';
-    document.getElementById('setting-bg-url').value = settings.bgUrl || '';
+    const setStoreName = document.getElementById('setting-store-name');
+    if (setStoreName) setStoreName.value = settings.storeName || '';
+
+    const setCurrency = document.getElementById('setting-store-currency');
+    if (setCurrency) setCurrency.value = settings.currency || '';
+
+    const setPhone = document.getElementById('setting-store-phone');
+    if (setPhone) setPhone.value = settings.phone || '';
+
+    const setWhatsapp = document.getElementById('setting-store-whatsapp');
+    if (setWhatsapp) setWhatsapp.value = settings.whatsapp || '';
+
+    const setInstagram = document.getElementById('setting-store-instagram');
+    if (setInstagram) setInstagram.value = settings.instagram || '';
+
+    const setTiktok = document.getElementById('setting-store-tiktok');
+    if (setTiktok) setTiktok.value = settings.tiktok || '';
+
+    const setFacebook = document.getElementById('setting-store-facebook');
+    if (setFacebook) setFacebook.value = settings.facebook || '';
+
+    const setPayment = document.getElementById('setting-payment-methods');
+    if (setPayment) setPayment.value = settings.paymentMethods || '';
+
+    const setLocation = document.getElementById('setting-store-location');
+    if (setLocation) setLocation.value = settings.location || '';
+
+    const setMaps = document.getElementById('setting-maps-url');
+    if (setMaps) setMaps.value = settings.mapsUrl || '';
+
+    const setBg = document.getElementById('setting-bg-url');
+    if (setBg) setBg.value = settings.bgUrl || '';
 }
 
 function handleAdminLogin(e) {
     e.preventDefault();
-    const inputPass = document.getElementById('admin-password-input').value;
+    const passwordInput = document.getElementById('admin-password-input');
+    const inputPass = passwordInput ? passwordInput.value : '';
+    
     if (inputPass === settings.adminPassword) {
-        // Save session token so it doesn't loop on Android
+        // Save session token so it doesn't loop
         localStorage.setItem('Urban Savannah Collection_admin_auth', 'true');
-        document.getElementById('admin-login-screen').classList.add('hidden');
+        const loginScreen = document.getElementById('admin-login-screen');
+        if (loginScreen) loginScreen.classList.add('hidden');
     } else {
         alert("Incorrect Admin Password!");
     }
 }
 
+// Attach event listener safely to login form if it exists in DOM
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('admin-login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', handleAdminLogin);
+    }
+});
+
 function switchAdminTab(tab) {
     ['orders', 'products', 'settings', 'policies'].forEach(t => {
-        document.getElementById(`admin-tab-${t}`).classList.add('hidden');
-        document.getElementById(`tab-btn-${t}`).classList.remove('bg-sky-600', 'text-white');
-        document.getElementById(`tab-btn-${t}`).classList.add('text-slate-400');
+        const tabEl = document.getElementById(`admin-tab-${t}`);
+        const btnEl = document.getElementById(`tab-btn-${t}`);
+        if (tabEl) tabEl.classList.add('hidden');
+        if (btnEl) {
+            btnEl.classList.remove('bg-sky-600', 'text-white');
+            btnEl.classList.add('text-slate-400');
+        }
     });
-    document.getElementById(`admin-tab-${tab}`).classList.remove('hidden');
-    document.getElementById(`tab-btn-${tab}`).classList.add('bg-sky-600', 'text-white');
+    const activeTab = document.getElementById(`admin-tab-${tab}`);
+    const activeBtn = document.getElementById(`tab-btn-${tab}`);
+    if (activeTab) activeTab.classList.remove('hidden');
+    if (activeBtn) {
+        activeBtn.classList.add('bg-sky-600', 'text-white');
+        activeBtn.classList.remove('text-slate-400');
+    }
 }
 
 function renderAdminOrders() {
     const tbody = document.getElementById('admin-orders-table-body');
+    if (!tbody) return;
     tbody.innerHTML = orders.map(order => `
         <tr class="hover:bg-slate-800/40 border-b border-slate-800/60">
             <td class="py-3.5 px-4 font-mono"><span class="font-bold text-white block">${order.id}</span><span class="text-[11px] text-slate-400">${order.dateTime}</span></td>
@@ -130,24 +170,24 @@ function renderAdminOrders() {
     `).join('');
 }
 
-function toggleOrderStatus(id) {
+window.toggleOrderStatus = function(id) {
     const o = orders.find(ord => ord.id === id);
     if (o) {
         o.status = o.status === 'Pending Delivery' ? 'Delivered' : 'Pending Delivery';
         saveAdminState();
         renderAdminOrders();
     }
-}
+};
 
-function deleteOrder(id) {
+window.deleteOrder = function(id) {
     if (confirm("Are you sure you want to permanently delete this order?")) {
         orders = orders.filter(o => o.id !== id);
         saveAdminState();
         renderAdminOrders();
     }
-}
+};
 
-function exportOrdersToExcel() {
+window.exportOrdersToExcel = function() {
     let template = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
     <head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Orders</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head>
     <body><table border="1">
@@ -164,9 +204,9 @@ function exportOrdersToExcel() {
     a.href = url;
     a.download = `Urban Savannah Collection_orders_${Date.now()}.xls`;
     a.click();
-}
+};
 
-function exportOrdersToSpreadsheet() {
+window.exportOrdersToSpreadsheet = function() {
     let csv = 'Order ID,Nairobi Date & Time,Customer Name,Phone,Address,Checkout Method,Total Amount,Status\n';
     orders.forEach(o => {
         csv += `"${o.id}","${o.dateTime}","${o.customerName}","${o.customerPhone}","${o.customerAddress}","${o.contactChannel || 'WhatsApp'}",${o.total},"${o.status}"\n`;
@@ -177,10 +217,11 @@ function exportOrdersToSpreadsheet() {
     a.href = url;
     a.download = `Urban Savannah Collection_orders_${Date.now()}.csv`;
     a.click();
-}
+};
 
-function addImageUrlInput(value = '') {
+window.addImageUrlInput = function(value = '') {
     const container = document.getElementById('image-urls-container');
+    if (!container) return;
     const div = document.createElement('div');
     div.className = 'flex items-center gap-2';
     div.innerHTML = `
@@ -188,10 +229,11 @@ function addImageUrlInput(value = '') {
         <button type="button" onclick="this.parentElement.remove()" class="p-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20"><i class="fa-solid fa-trash"></i></button>
     `;
     container.appendChild(div);
-}
+};
 
 function renderAdminProducts() {
     const grid = document.getElementById('admin-products-grid');
+    if (!grid) return;
     grid.innerHTML = products.map(product => `
         <div class="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden p-4 flex flex-col justify-between">
             <div>
@@ -207,32 +249,35 @@ function renderAdminProducts() {
     `).join('');
 }
 
-function openProductModal(id = null) {
+window.openProductModal = function(id = null) {
     const container = document.getElementById('image-urls-container');
-    container.innerHTML = '';
+    if (container) container.innerHTML = '';
     if (id) {
         const p = products.find(prod => prod.id === id);
-        document.getElementById('prod-id').value = p.id;
-        document.getElementById('prod-title').value = p.title;
-        document.getElementById('prod-price').value = p.price;
-        document.getElementById('prod-category').value = p.category;
-        document.getElementById('prod-desc').value = p.description;
-        document.getElementById('product-modal-title').textContent = "Edit Product Details";
-        p.images.forEach(img => addImageUrlInput(img));
+        if (p) {
+            document.getElementById('prod-id').value = p.id;
+            document.getElementById('prod-title').value = p.title;
+            document.getElementById('prod-price').value = p.price;
+            document.getElementById('prod-category').value = p.category;
+            document.getElementById('prod-desc').value = p.description;
+            document.getElementById('product-modal-title').textContent = "Edit Product Details";
+            p.images.forEach(img => addImageUrlInput(img));
+        }
     } else {
-        document.getElementById('product-form').reset();
+        const prodForm = document.getElementById('product-form');
+        if (prodForm) prodForm.reset();
         document.getElementById('prod-id').value = '';
         document.getElementById('product-modal-title').textContent = "Add Product";
         addImageUrlInput('');
     }
     document.getElementById('product-modal').classList.remove('hidden');
-}
+};
 
-function closeProductModal() {
+window.closeProductModal = function() {
     document.getElementById('product-modal').classList.add('hidden');
-}
+};
 
-function saveProduct(e) {
+window.saveProduct = function(e) {
     e.preventDefault();
     const id = document.getElementById('prod-id').value;
     const title = document.getElementById('prod-title').value;
@@ -256,20 +301,20 @@ function saveProduct(e) {
     saveAdminState();
     renderAdminProducts();
     closeProductModal();
-}
+};
 
-function deleteProduct(id) {
+window.deleteProduct = function(id) {
     if (confirm("Are you sure you want to delete this product?")) {
         products = products.filter(p => p.id !== id);
         saveAdminState();
         renderAdminProducts();
     }
-}
-function saveAdminSettings(e) {
-    e.preventDefault();
-    e.stopPropagation(); // Stops any duplicate bubbling events
+};
 
-    // Capture and save all form values cleanly in one go
+window.saveAdminSettings = function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
     settings.storeName = document.getElementById('setting-store-name').value;
     settings.logoUrl = document.getElementById('setting-logo-url').value.trim();
     settings.currency = document.getElementById('setting-store-currency').value;
@@ -282,28 +327,24 @@ function saveAdminSettings(e) {
     settings.location = document.getElementById('setting-store-location').value;
     settings.mapsUrl = document.getElementById('setting-maps-url').value;
     
-    // Safely capture background URL
     const bgInput = document.getElementById('setting-bg-url').value.trim();
     if (bgInput) {
         settings.bgUrl = bgInput;
     }
 
-    // Save permanently to browser storage
     saveAdminState();
-
-    // Single unified alert message
     alert("Store settings saved successfully!");
-}
+};
 
-function openChangePasswordModal() {
+window.openChangePasswordModal = function() {
     document.getElementById('change-pass-modal').classList.remove('hidden');
-}
+};
 
-function toggleChangePassModal(open) {
+window.toggleChangePassModal = function(open) {
     document.getElementById('change-pass-modal').classList.toggle('hidden', !open);
-}
+};
 
-function handleChangePassword(e) {
+window.handleChangePassword = function(e) {
     e.preventDefault();
     const oldP = document.getElementById('old-pass').value;
     const newP = document.getElementById('new-pass').value;
@@ -315,22 +356,24 @@ function handleChangePassword(e) {
     saveAdminState();
     toggleChangePassModal(false);
     alert("Password updated!");
-}
+};
 
 function loadPoliciesForm() {
-    document.getElementById('policy-terms').value = settings.terms;
-    document.getElementById('policy-privacy').value = settings.privacy;
+    const pTerms = document.getElementById('policy-terms');
+    const pPrivacy = document.getElementById('policy-privacy');
+    if (pTerms) pTerms.value = settings.terms;
+    if (pPrivacy) pPrivacy.value = settings.privacy;
 }
 
-function savePolicies(e) {
+window.savePolicies = function(e) {
     e.preventDefault();
     settings.terms = document.getElementById('policy-terms').value;
     settings.privacy = document.getElementById('policy-privacy').value;
     saveAdminState();
     alert("Policies updated!");
-}
+};
 
-function printOrderReceipt(orderId) {
+window.printOrderReceipt = function(orderId) {
     const order = orders.find(o => o.id === orderId);
     if (!order) return;
 
@@ -356,4 +399,4 @@ function printOrderReceipt(orderId) {
     
     document.getElementById('print-total').textContent = formatMoney(order.total);
     window.print();
-}
+};
