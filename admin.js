@@ -29,7 +29,7 @@ const DEFAULT_SETTINGS = {
   mapsUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15955.292672314545!2d36.817223!3d-1.286389!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1172d84d49a7%3A0xf7cf0254b297924c!2sNairobi!5e0!3m2!1sen!2ske!4v1650000000000!5m2!1sen!2ske",
   deliveryFee: 5.00,
   bgUrl: "https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=1600&q=80",
-  adminPassword: "QWERTY123", // <-- CHANGE THIS TO RECOVER PASSWORD IF LOST
+  adminPassword: "admin123", // <-- CHANGE THIS MANUALLY ON GITHUB TO RECOVER PASSWORD
   terms: "Welcome to Urban Savannah Collection. Purchases are governed by local delivery guidelines in Nairobi, Kenya.",
   privacy: "Information collected during checkout is strictly used for order processing and delivery."
 };
@@ -57,11 +57,7 @@ window.onload = async function() {
     const docSnap = await getDoc(settingsRef);
     if (docSnap.exists()) {
       const cloudSettings = docSnap.data();
-      settings = { 
-        ...DEFAULT_SETTINGS, 
-        ...cloudSettings, 
-        adminPassword: cloudSettings.adminPassword || DEFAULT_SETTINGS.adminPassword 
-      };
+      settings = { ...DEFAULT_SETTINGS, ...cloudSettings };
     } else {
       settings = DEFAULT_SETTINGS;
       await setDoc(settingsRef, settings);
@@ -74,11 +70,7 @@ window.onload = async function() {
   onSnapshot(doc(db, "settings", "store_settings"), (docSnap) => {
     if (docSnap.exists()) {
       const cloudSettings = docSnap.data();
-      settings = { 
-        ...settings, 
-        ...cloudSettings, 
-        adminPassword: cloudSettings.adminPassword || settings.adminPassword 
-      };
+      settings = { ...settings, ...cloudSettings };
       syncAdminData();
       loadPoliciesForm();
     }
@@ -145,19 +137,13 @@ function syncAdminData() {
   }
 }
 
-window.handleAdminLogin = async function(e) {
+window.handleAdminLogin = function(e) {
   e.preventDefault();
   const passwordInput = document.getElementById('admin-password-input');
   const inputPass = passwordInput ? passwordInput.value : '';
   
-  // Checks against active cloud/local password OR code-level recovery fallback from DEFAULT_SETTINGS
-  if (inputPass === settings.adminPassword || inputPass === DEFAULT_SETTINGS.adminPassword) {
-    // If recovery password from code was used, automatically sync it to cloud as the active password
-    if (inputPass === DEFAULT_SETTINGS.adminPassword && inputPass !== settings.adminPassword) {
-      settings.adminPassword = DEFAULT_SETTINGS.adminPassword;
-      await saveAdminState();
-    }
-
+  // Directly matches against the password explicitly defined in admin.js (DEFAULT_SETTINGS)
+  if (inputPass === DEFAULT_SETTINGS.adminPassword) {
     localStorage.setItem('Urban Savannah Collection_admin_auth', 'true');
     const loginScreen = document.getElementById('admin-login-screen');
     if (loginScreen) loginScreen.classList.add('hidden');
@@ -400,16 +386,14 @@ window.handleChangePassword = async function(e) {
   const oldP = document.getElementById('old-pass').value;
   const newP = document.getElementById('new-pass').value;
   
-  if (oldP !== settings.adminPassword && oldP !== DEFAULT_SETTINGS.adminPassword) {
+  if (oldP !== DEFAULT_SETTINGS.adminPassword) {
     alert("Current password is incorrect.");
     return;
   }
   
-  settings.adminPassword = newP;
   DEFAULT_SETTINGS.adminPassword = newP;
-  await saveAdminState();
   toggleChangePassModal(false);
-  alert("Password updated successfully and synced to cloud!");
+  alert("Password updated successfully in admin.js session!");
 };
 
 function loadPoliciesForm() {
